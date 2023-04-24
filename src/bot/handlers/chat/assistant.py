@@ -3,7 +3,7 @@ import os
 from aiogram import types, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery
 from loguru import logger
 
 from bot.keyboards import get_role_keyboard, get_type_keyboard
@@ -24,12 +24,16 @@ async def cmd_set_role(message: types.Message, state: FSMContext):
 
 @router.callback_query(StateFilter(BotState.ROLE))
 async def callback_set_role(callback: CallbackQuery, state: FSMContext):
-    user_id = callback.from_user.id
     role_name = callback.data
     role = BotRole.__getitem__(role_name)
-    new_history = [await llm.get_start_message_by_role(role)]
+
+    user_id = callback.from_user.id
+    user_data: User = await user_storage.get_user_data(user_id)
+    history_messages = user_data['history']
+    history_messages[0] = await llm.get_start_message_by_role(role)
+
+    await user_storage.update_history_messages(user_id, history_messages)
     await user_storage.set_role(user_id, role_name)
-    await user_storage.update_history_messages(user_id, new_history)
     await callback.answer(text=f'Вы выбрали роль ассистента: {callback.data}.')
     await state.set_state(BotState.CHAT)
     await callback.message.delete()
@@ -68,6 +72,36 @@ async def cmd_get_info(message: types.Message):
              f'- Bot Prompt -\n{role.value}\n' \
              f'-------------------------------------------------------'
     await message.answer(answer)
+
+
+@router.message(Command('clear_history'), BotState.CHAT)
+async def cdm_clear_history(message: types.Message):
+    await message.delete()
+    user_id = message.from_user.id
+    user_data: User = await user_storage.get_user_data(user_id)
+
+    history_messages = [user_data['history'][0]]
+    await user_storage.update_history_messages(user_id, history_messages)
+    await message.answer('История сообщений ассистента очищена.')
+
+
+@router.message(Command('get_history'), BotState.CHAT)
+async def cdm_get_history(message: types.Message):
+    await message.delete()
+    user_id = message.from_user.id
+    user_data: User = await user_storage.get_user_data(user_id)
+
+    history_messages_str = f'------------------{message.from_user.username} message history--------------------\n'
+    history_messages: list[Message] = user_data['history']
+    for item in history_messages:
+        role = str(item["role"]).capitalize()
+        if role == 'System':
+            continue
+        content = item["content"]
+        history_messages_str += f'>> {role} : {content}\n'
+
+    history_messages_str = history_messages_str[:-1]
+    await message.answer(history_messages_str)
 
 
 @router.message(BotState.CHAT, F.text | F.voice | F.audio)

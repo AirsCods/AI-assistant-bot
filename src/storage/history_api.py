@@ -2,7 +2,7 @@ import tiktoken
 from cachetools import TTLCache
 from loguru import logger
 
-from models.types import Message, User, BotRole
+from models.types import Message, User
 from .storage_interface import StorageInterface
 
 
