@@ -9,8 +9,8 @@ class LlmAgent:
     async def start_agent(self):
         await self.open_ai.start()
 
-    async def get_text_recognize(self, audio) -> str:
-        return await self.open_ai.get_text_recognize(audio)
+    async def get_speech_to_text(self, audio) -> str:
+        return await self.open_ai.get_speech_to_text(audio)
 
     async def get_start_message_by_role(self, bot_role: BotRole) -> Message:
         return await self.open_ai.get_start_message_by_role(bot_role)

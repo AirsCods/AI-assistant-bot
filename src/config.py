@@ -3,20 +3,18 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+ADMIN_ID = os.getenv('ADMIN_ID')
 
 admins = [
-    os.getenv('ADMIN_ID')
+    ADMIN_ID,
 ]
 
 DEBUG = os.getenv('DEBUG')
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-ADMIN_ID = os.getenv('ADMIN_ID')
-
 SHOW_USAGE = os.getenv('SHOW_USAGE')
 
 OPEN_AI_TOKEN = os.getenv('OPEN_AI_TOKEN')
-
 OPENAI_CONFIG = {
     'api_key': OPEN_AI_TOKEN,
     'model': 'gpt-3.5-turbo',

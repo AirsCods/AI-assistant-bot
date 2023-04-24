@@ -6,3 +6,4 @@ class BotState(StatesGroup):
     CHAT = State()
     START = State()
     TALK = State()
+    TYPE = State()

@@ -1,10 +1,8 @@
-import io
 import os
 from typing import Optional
 
 import openai
 import tiktoken
-from aiogram import types
 from loguru import logger
 
 from models.types import Message, RoleType, BotRole
@@ -113,40 +111,15 @@ class OpenAI:
             case None:
                 logger.info('Ответ API все еще выполняется или не завершен')
 
-    async def get_text_recognize(self, audio: types.Audio | types.Voice | types.Document) -> str:
-
-        path_file = await self.__save_audio(audio)
-
-        logger.info('Открываю файл')
-        with open(path_file, 'rb') as audio:
+    @staticmethod
+    async def get_speech_to_text(file_path: str) -> str:
+        logger.info('Открываю файл перед распознаванием.')
+        with open(file_path, 'rb') as audio:
             logger.info('Запрашиваю ответ от Whisper')
             text = openai.Audio.transcribe(
                 model='whisper-1',
                 file=audio,
             )['text']
-        os.remove(path_file)
-
-        logger.info(f'Результат транскрибации: {text}')
-
+        os.remove(file_path)
+        logger.info(f'Распознанный текст: {text}')
         return text
-
-    @staticmethod
-    async def __save_audio(audio: types.Audio | types.Voice) -> str:
-        logger.info('Создаю путь для файла')
-        file_id: str = audio.file_id
-
-        logger.info('Записываю данные аудио')
-        msg_io: io.BytesIO = await audio.bot.download_file_by_id(file_id)
-
-        # Преобразование BytesIO объекта в AudioSegment объект
-        audio_segment = AudioSegment.from_file(msg_io)
-
-        # Экспорт аудио файла в формат MP3
-        logger.info('Сохраняю в файл')
-        path_file = f"{os.getcwd()}/tmp/{file_id}.mp3"
-        audio_segment.export(path_file, format='mp3')
-
-        # Закрытие BytesIO объекта
-        msg_io.close()
-
-        return path_file

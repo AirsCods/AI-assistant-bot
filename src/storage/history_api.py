@@ -35,16 +35,20 @@ class HistoryApi:
             users_field='history',
             new_data=message_history
         )
-
         # Обновляем историю сообщений в кэше
         if user_id in self.cache:
             self.cache[user_id]['history'] = message_history
 
-    async def set_type_output(self, user_id: int, type: str):
-        bot_config = {
-            'output_type': type,
-        }
-        await self.storage.update(user_id, 'bot_config', bot_config)
+    async def set_type_output(self, user_id: int, type_output: str):
+        bot_config = {'output_type': type_output}
+        await self.storage.update(
+            user_id=user_id,
+            users_field='bot_config',
+            new_data=bot_config
+        )
+        # Обновляем настройки бота в кэше
+        if user_id in self.cache:
+            self.cache[user_id]['bot_config'] = bot_config
 
     @staticmethod
     async def story_shortening(history: list[Message], total_tokens: int) -> list[Message]:
