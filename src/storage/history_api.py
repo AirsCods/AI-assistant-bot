@@ -2,7 +2,7 @@ import tiktoken
 from cachetools import TTLCache
 from loguru import logger
 
-from models.types import Message, User
+from models.types import Message, User, BotRole
 from .storage_interface import StorageInterface
 
 
@@ -40,15 +40,24 @@ class HistoryApi:
             self.cache[user_id]['history'] = message_history
 
     async def set_type_output(self, user_id: int, type_output: str):
-        bot_config = {'output_type': type_output}
         await self.storage.update(
             user_id=user_id,
-            users_field='bot_config',
-            new_data=bot_config
+            users_field='output_type',
+            new_data=type_output
         )
         # Обновляем настройки бота в кэше
         if user_id in self.cache:
-            self.cache[user_id]['bot_config'] = bot_config
+            self.cache[user_id]['output_type'] = type_output
+
+    async def set_role(self, user_id: int, role_name: str):
+        await self.storage.update(
+            user_id=user_id,
+            users_field='bot_role',
+            new_data=role_name
+        )
+        # Обновляем настройки бота в кэше
+        if user_id in self.cache:
+            self.cache[user_id]['bot_role'] = role_name
 
     @staticmethod
     async def story_shortening(history: list[Message], total_tokens: int) -> list[Message]:

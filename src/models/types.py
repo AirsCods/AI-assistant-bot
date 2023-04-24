@@ -3,25 +3,6 @@ from enum import Enum
 from typing import TypedDict
 
 
-class RoleType(Enum):
-    SYSTEM = 'system'
-    USER = 'user'
-    ASSISTANT = 'assistant'
-
-
-class Message(TypedDict):
-    role: RoleType
-    content: str
-
-
-class User(TypedDict):
-    _id: int
-    name: str
-    history: list[Message]
-    bot_config: dict[str, str]
-    created_ad: datetime
-
-
 class BotRole(Enum):
     DEFAULT = ''
     PROMPT_CREATOR = 'I want you to become my Prompt Creator. Your goal is to help me craft the best possible prompt for my needs.' \
@@ -117,3 +98,23 @@ class BotRole(Enum):
                  ' decisions that are in the best interest of the company and its employees. Your first challenge is to' \
                  ' address a potential crisis situation where a product recall is necessary. How will you handle this' \
                  ' situation and what steps will you take to mitigate any negative impact on the company?'
+
+
+class RoleType(Enum):
+    SYSTEM = 'system'
+    USER = 'user'
+    ASSISTANT = 'assistant'
+
+
+class Message(TypedDict):
+    role: RoleType
+    content: str
+
+
+class User(TypedDict):
+    _id: int
+    name: str
+    history: list[Message]
+    output_type: str
+    bot_role: str
+    created_ad: datetime

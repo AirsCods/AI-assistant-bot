@@ -59,11 +59,13 @@ class MongoDBStorage(StorageInterface):
 
         else:
             logger.info(f'User {user["name"]} exist and update to MongoDB')
-            self.storage.update_one({'_id': user_id}, {'$set': {
-                'name': user['name'],
-                'history': user['history'],
-                'bot_config': user['bot_config'],
-            }})
+            self.storage.update_one({'_id': user_id},
+                                    {'$set': {
+                                        'name': user['name'],
+                                        'history': user['history'],
+                                        'output_type': user['output_type'],
+                                        'bot_role': user['bot_role']
+                                    }})
 
     async def read(self, user_id: int) -> User | None:
         return await self.storage.find_one({'_id': user_id})
