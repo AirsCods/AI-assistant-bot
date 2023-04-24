@@ -1,8 +1,9 @@
 import os
+import tempfile
 
 from aiogram import types
 from aiogram.enums import ContentType
-from aiogram.types import InputFile, FSInputFile
+from aiogram.types import FSInputFile
 from gtts import gTTS
 from loguru import logger
 from pydub import AudioSegment
@@ -30,8 +31,18 @@ async def get_voice_answer(answer: str, user_id: int) -> FSInputFile:
     tts.save(path_file)
     # Открываем временный файл и отправляем его содержимое пользователю в виде голосового сообщения
     file_voice = FSInputFile(path_file)
-    # Удаляем временный файл после отправки голосового сообщения
-    # os.remove(path_file)
+    return file_voice
+
+
+async def get_voice_answer_tempfile(answer: str, user_id: int) -> FSInputFile:
+    logger.info(f'Перевожу текст в аудио {user_id}')
+    tts = gTTS(text=answer, lang="ru", slow=False)
+    with tempfile.NamedTemporaryFile(delete=False) as temp:
+        temp_filename = temp.name
+        tts.save(temp.name)
+        file_voice = FSInputFile(temp.name)
+    print(temp_filename)
+    os.unlink(temp_filename)
     return file_voice
 
 
@@ -43,4 +54,5 @@ async def _download_audio_file(audio: types.Audio | types.Voice) -> str:
         logger.info('Сохраняю данные аудио в файл')
         path_file = f"{os.getcwd()}/tmp/{audio.file_id}.mp3"
         audio_segment.export(path_file, format='mp3')
+
     return path_file
