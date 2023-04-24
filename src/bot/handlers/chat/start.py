@@ -5,6 +5,7 @@ from aiogram.filters import Command, StateFilter, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
+from bot.keyboards.menu import get_start_menu, get_chat_menu
 from bot.keyboards.role import get_role_keyboard
 from bot.loader import user_storage, llm
 from bot.states import BotState
@@ -15,16 +16,17 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: types.Message):
+async def cmd_start(message: types.Message, state: FSMContext):
     await message.delete()
     answer = f'Добро пожаловать {message.from_user.full_name}! Вас приветствует бот-ассистент.\n' \
              f'Вы можете выбрать роль своего ассистента и настроить текстовый или голосовой формат ответов.\n' \
              f'Для подробной информации введите команду /help.'
+    start_menu = get_start_menu()
+    await message.answer(answer, reply_markup=start_menu)
+    await state.set_state(BotState.START)
 
-    await message.answer(answer)
 
-
-@router.message(Command('go_talk'))
+@router.message(Command('go_talk'), BotState.START)
 async def first_choose_role(message: types.Message, state: FSMContext):
     await message.delete()
     await state.set_state(BotState.ADD_USER)
@@ -50,7 +52,22 @@ async def add_user(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
 
 
-@router.message(Command('help'))
+@router.message(Command('menu'), BotState.CHAT)
+async def cmd_menu(message: types.Message, state: FSMContext):
+    await message.delete()
+    chat_menu = get_chat_menu()
+    await message.answer('Chat menu:', reply_markup=chat_menu)
+
+
+@router.message(Command('menu'))
+async def cmd_menu(message: types.Message, state: FSMContext):
+    await message.delete()
+    start_menu = get_start_menu()
+    await message.answer('Start menu:', reply_markup=start_menu)
+    await state.set_state(BotState.START)
+
+
+@router.message(Command('help'), StateFilter(BotState.CHAT, BotState.START))
 async def cmd_help(message: types.Message):
     await message.delete()
     await message.answer(
