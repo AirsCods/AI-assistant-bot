@@ -3,7 +3,7 @@ from cachetools import TTLCache
 from loguru import logger
 
 from models.types import Message, User
-from .storage_interface import StorageInterface
+from storage.interface import StorageInterface
 
 
 class HistoryApi:

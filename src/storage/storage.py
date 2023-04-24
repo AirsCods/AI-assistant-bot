@@ -2,10 +2,10 @@ import pickle
 from typing import Any
 
 from loguru import logger
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
-from models.types import User
-from .storage_interface import StorageInterface
+from models.types import User, Prompt
+from storage.interface import StorageInterface
 
 
 class DictStorage(StorageInterface):
@@ -78,6 +78,37 @@ class MongoDBStorage(StorageInterface):
 
     async def delete(self, user_id: int) -> None:
         await self.storage.delete_one({'_id': user_id})
+
+    async def close(self) -> None:
+        self._db_client.close()
+
+
+class MongoDBPrompt(StorageInterface):
+    def __init__(self, url_connect: str):
+        super().__init__()
+        self._db_client: AsyncIOMotorClient = AsyncIOMotorClient(url_connect)
+        self.storage: AsyncIOMotorCollection = self._db_client.ai_prompt.prompts
+
+    async def create(self, prompt: Prompt) -> None:
+        await self.storage.insert_one(prompt)
+
+    async def create_all(self, prompts_list: list[Prompt]):
+        await self.storage.insert_many(prompts_list)
+
+    async def read(self, name: str) -> Prompt | None:
+        return await self.storage.find_one({'name': name})
+
+    async def read_all(self) -> list[Prompt]:
+        return [await self.storage.find()]
+
+    async def update(self,
+                     name: str,
+                     users_field: Prompt.keys,
+                     new_data: Any) -> None:
+        await self.storage.update_one({'name': name}, {'$set': {users_field: new_data}})
+
+    async def delete(self, name: str) -> None:
+        await self.storage.delete_one({'_id': name})
 
     async def close(self) -> None:
         self._db_client.close()

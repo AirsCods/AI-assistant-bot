@@ -3,7 +3,7 @@ import asyncio
 from loguru import logger
 
 from bot.handlers.chat import router
-from bot.loader import bot, llm, dp, user_storage
+from bot.loader import bot, llm, dp, user_storage, prompt_storage
 from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
 
@@ -17,6 +17,7 @@ async def on_startup():
 
 async def on_shutdown():
     await user_storage.close()
+    await prompt_storage.close()
 
 
 async def main():

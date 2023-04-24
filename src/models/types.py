@@ -118,3 +118,10 @@ class User(TypedDict):
     output_type: str
     bot_role: str
     created_ad: datetime
+
+
+class Prompt(TypedDict):
+    name: str
+    description: str
+    prompt: str
+    author: str
