@@ -1,7 +1,7 @@
 import os
 
 from aiogram import types, F
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command, StateFilter, IS_ADMIN
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from loguru import logger
@@ -21,6 +21,11 @@ async def cmd_set_role(message: types.Message, state: FSMContext):
     prompts = await prompt_storage.get_all_prompt()
     role_keyboard = get_role_keyboard(prompts)
     await message.answer('Выберите роль для ассистента:', reply_markup=role_keyboard)
+
+
+@router.message(Command('add_role'), BotState.CHAT, IS_ADMIN)
+async def cmd_add_role(message: types.Message):
+    await message.delete()
 
 
 @router.callback_query(StateFilter(BotState.ROLE))
