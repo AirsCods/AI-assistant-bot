@@ -2,7 +2,7 @@ import asyncio
 
 from loguru import logger
 
-from bot.handlers.chat import assistant
+from bot.handlers.chat import router
 from bot.loader import bot, llm, dp, user_storage
 from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
@@ -11,7 +11,7 @@ from utils.set_bot_commands import set_default_commands
 async def on_startup():
     await llm.start_agent()
     await bot.delete_webhook()
-    dp.include_router(assistant.router)
+    dp.include_router(router)
     await on_startup_notify(bot)
 
 

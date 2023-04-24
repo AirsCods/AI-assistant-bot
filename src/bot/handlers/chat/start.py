@@ -6,12 +6,10 @@ from aiogram.filters import Command, StateFilter, CommandStart, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
-from bot.keyboards.menu import get_start_menu, get_chat_menu
-from bot.keyboards.role import get_role_keyboard
+from bot.keyboards import get_start_menu, get_chat_menu, get_role_keyboard
 from bot.loader import user_storage, llm
 from bot.states import BotState
-from models.types import BotRole
-from models.types import User
+from models.types import BotRole, User
 
 router = Router()
 
