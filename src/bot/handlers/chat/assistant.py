@@ -7,9 +7,9 @@ from aiogram.types import CallbackQuery
 from loguru import logger
 
 from bot.keyboards import get_role_keyboard, get_type_keyboard
-from bot.loader import user_storage, llm
+from bot.loader import user_storage, llm, prompt_storage
 from bot.states import BotState
-from models.types import BotRole, Message, RoleType, User
+from models.types import Message, RoleType, User, Prompt
 from utils.checkers import get_text_question, get_voice_answer
 from .start import router
 
@@ -18,19 +18,20 @@ from .start import router
 async def cmd_set_role(message: types.Message, state: FSMContext):
     await message.delete()
     await state.set_state(BotState.ROLE)
-    role_keyboard = get_role_keyboard()
+    prompts = await prompt_storage.get_all_prompt()
+    role_keyboard = get_role_keyboard(prompts)
     await message.answer('Выберите роль для ассистента:', reply_markup=role_keyboard)
 
 
 @router.callback_query(StateFilter(BotState.ROLE))
 async def callback_set_role(callback: CallbackQuery, state: FSMContext):
     role_name = callback.data
-    role = BotRole.__getitem__(role_name)
+    prompt: Prompt = await prompt_storage.get_prompt(role_name)
 
     user_id = callback.from_user.id
     user_data: User = await user_storage.get_user_data(user_id)
     history_messages = user_data['history']
-    history_messages[0] = await llm.get_start_message_by_role(role)
+    history_messages[0] = await llm.get_start_message_by_role(prompt['description'])
 
     await user_storage.update_history_messages(user_id, history_messages)
     await user_storage.set_role(user_id, role_name)
@@ -63,13 +64,13 @@ async def cmd_get_info(message: types.Message):
     user_id = message.from_user.id
     user_data: User = await user_storage.get_user_data(user_id)
     bot_role = user_data["bot_role"]
-    role = BotRole.__getitem__(bot_role)
+    prompt: Prompt = await prompt_storage.get_prompt(bot_role)
     answer = f'-------------------------------------------------------\n' \
              f'- ID - {user_data["_id"]}\n' \
              f'- Name - {user_data["name"]}\n' \
              f'- Role - {bot_role}\n' \
              f'- Output Type - {user_data["output_type"]}\n' \
-             f'- Bot Prompt -\n{role.value}\n' \
+             f'- Bot Prompt -\n{prompt["prompt"]}\n' \
              f'-------------------------------------------------------'
     await message.answer(answer)
 

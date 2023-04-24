@@ -99,7 +99,9 @@ class MongoDBPrompt(StorageInterface):
         return await self.storage.find_one({'name': name})
 
     async def read_all(self) -> list[Prompt]:
-        return [await self.storage.find()]
+        length = await self.storage.count_documents({})
+        prompts = await self.storage.find({}).to_list(length=length)
+        return prompts
 
     async def update(self,
                      name: str,

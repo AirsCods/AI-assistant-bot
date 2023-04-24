@@ -1,17 +1,15 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from models.types import BotRole
 
-
-def get_role_keyboard():
+def get_role_keyboard(prompts_list: list):
     choose_role_keyboard = InlineKeyboardBuilder()
-    for role in BotRole:
+    for prompt in prompts_list:
         choose_role_keyboard.button(
-            text=role.name,
-            callback_data=role.name
+            text=prompt['name'],
+            callback_data=prompt['name']
         )
-    choose_role_keyboard.adjust(2)
 
+    choose_role_keyboard.adjust(2)
     return choose_role_keyboard.as_markup()
 
 

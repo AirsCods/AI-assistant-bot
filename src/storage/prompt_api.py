@@ -5,6 +5,7 @@ from storage.storage import MongoDBPrompt
 class PromptApi:
     def __init__(self, prompt_storage: MongoDBPrompt):
         self.storage: MongoDBPrompt = prompt_storage
+        self.prompts: list[Prompt]
 
     async def create_prompt(self, name: str, description: str, prompt: str, author: str):
         prompt = Prompt(name=name,
@@ -15,6 +16,9 @@ class PromptApi:
 
     async def save_all(self, prompts_list: list[Prompt]):
         await self.storage.create_all(prompts_list)
+
+    async def get_prompt(self, name: str) -> Prompt:
+        return await self.storage.read(name)
 
     async def get_all_prompt(self):
         return await self.storage.read_all()

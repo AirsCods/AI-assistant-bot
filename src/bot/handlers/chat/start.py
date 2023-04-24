@@ -7,9 +7,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from bot.keyboards import get_start_menu, get_chat_menu, get_role_keyboard
-from bot.loader import user_storage, llm
+from bot.loader import user_storage, llm, prompt_storage
 from bot.states import BotState
-from models.types import BotRole, User
+from models.types import User, Prompt
 
 router = Router()
 
@@ -34,7 +34,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def first_choose_role(message: types.Message, state: FSMContext):
     await message.delete()
     await state.set_state(BotState.ADD_USER)
-    role_keyboard = get_role_keyboard()
+    prompts = await prompt_storage.get_all_prompt()
+    role_keyboard = get_role_keyboard(prompts)
     await message.answer('Выберите роль для ассистента:', reply_markup=role_keyboard)
 
 
@@ -55,12 +56,12 @@ async def choose_role(message: types.Message, state: FSMContext):
 @router.callback_query(StateFilter(BotState.ADD_USER))
 async def add_user(callback: CallbackQuery, state: FSMContext):
     role_name = callback.data
-    role = BotRole.__getitem__(role_name)
+    prompt: Prompt = await prompt_storage.get_prompt(role_name)
     user = User(
         _id=callback.from_user.id,
         name=callback.from_user.full_name,
         created_ad=datetime.datetime.utcnow(),
-        history=[await llm.get_start_message_by_role(role)],
+        history=[await llm.get_start_message_by_role(prompt["prompt"])],
         output_type='text',
         bot_role=role_name
     )

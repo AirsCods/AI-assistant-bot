@@ -5,7 +5,7 @@ import openai
 import tiktoken
 from loguru import logger
 
-from models.types import Message, RoleType, BotRole
+from models.types import Message, RoleType
 
 
 class StartMessage:
@@ -25,22 +25,22 @@ class StartMessage:
         else:
             raise NameError
 
-    def get_start_message(self, bot_role: BotRole) -> Message:
+    def get_start_message(self, description: str) -> Message:
         """ Устанавливает системное сообщение для ChatGPT"""
         match self._model:
 
             case 'gpt-3.5-turbo':
-                prompt = self.get_prompt_by_role(bot_role)
+                prompt = self.get_prompt_by_role(description)
                 message = Message(role=RoleType.SYSTEM.value, content=prompt)
                 self._start_message = message
 
         return message
 
     @staticmethod
-    def get_prompt_by_role(bot_role: BotRole) -> str:
+    def get_prompt_by_role(description: str) -> str:
         prefix = 'Ignore all previous instructions. This is now your new persona and role:'
         suffix = 'Разговаривай со мной на русском языке.'
-        prompt = f'{prefix}\n{bot_role.value}\n{suffix}'
+        prompt = f'{prefix}\n{description}\n{suffix}'
         return prompt
 
     @staticmethod
@@ -59,8 +59,8 @@ class OpenAI:
     async def start(self):
         self._start_message = StartMessage(model=self.config['model'])
 
-    async def get_start_message_by_role(self, bot_role: BotRole) -> Message:
-        return self._start_message.get_start_message(bot_role)
+    async def get_start_message_by_role(self, description: str) -> Message:
+        return self._start_message.get_start_message(description)
 
     async def get_chat_answer(self, message_history: list[Message]) -> tuple[str, dict]:
         # Вызываю OPENAI API

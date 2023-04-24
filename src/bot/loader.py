@@ -1,14 +1,10 @@
-import asyncio
-
 from aiogram import Dispatcher, Bot
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from cachetools import TTLCache
-from loguru import logger
 
 from config import OPENAI_CONFIG, BOT_TOKEN, DB_URL_CONNECT
 from llm.llm_models import LlmAgent
-from models.types import BotRole, Prompt
 from storage.history_api import HistoryApi
 from storage.interface import StorageInterface
 from storage.prompt_api import PromptApi
