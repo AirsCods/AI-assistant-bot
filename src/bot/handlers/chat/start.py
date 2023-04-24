@@ -1,7 +1,8 @@
+import asyncio
 import datetime
 
 from aiogram import Router, types
-from aiogram.filters import Command, StateFilter, CommandStart
+from aiogram.filters import Command, StateFilter, CommandStart, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
@@ -13,6 +14,11 @@ from models.types import BotRole
 from models.types import User
 
 router = Router()
+
+
+@router.message(Text('Menu:'))
+async def menu_message(message: types.Message):
+    await message.delete()
 
 
 @router.message(CommandStart())
@@ -34,6 +40,20 @@ async def first_choose_role(message: types.Message, state: FSMContext):
     await message.answer('Выберите роль для ассистента:', reply_markup=role_keyboard)
 
 
+@router.message(Command('go_talk'))
+async def choose_role(message: types.Message, state: FSMContext):
+    await message.delete()
+    user_id = message.from_user.id
+    user_data: User = await user_storage.get_user_data(user_id)
+    role_name = user_data['bot_role']
+    if user_data:
+        await state.set_state(BotState.CHAT)
+        await message.answer(f'C возращением {message.from_user.username}.\n'
+                             f'Вы общаетесь с {role_name}.')
+    else:
+        return
+
+
 @router.callback_query(StateFilter(BotState.ADD_USER))
 async def add_user(callback: CallbackQuery, state: FSMContext):
     role_name = callback.data
@@ -50,21 +70,25 @@ async def add_user(callback: CallbackQuery, state: FSMContext):
     await callback.answer(text=f'Вы выбрали роль ассистента: {callback.data}.')
     await state.set_state(BotState.CHAT)
     await callback.message.delete()
+    await callback.message.answer(f'Ассистент в роли {role_name} готов к диалогу!🎱')
 
 
 @router.message(Command('menu'), BotState.CHAT)
-async def cmd_menu(message: types.Message, state: FSMContext):
+async def cmd_menu(message: types.Message):
     await message.delete()
     chat_menu = get_chat_menu()
-    await message.answer('Chat menu:', reply_markup=chat_menu)
+    msg = await message.answer('Menu:', reply_markup=chat_menu)
+    await asyncio.sleep(16)
+    await msg.delete()
 
 
 @router.message(Command('menu'))
-async def cmd_menu(message: types.Message, state: FSMContext):
+async def cmd_menu(message: types.Message):
     await message.delete()
     start_menu = get_start_menu()
-    await message.answer('Start menu:', reply_markup=start_menu)
-    await state.set_state(BotState.START)
+    msg = await message.answer('Menu:', reply_markup=start_menu)
+    await asyncio.sleep(8)
+    await msg.delete()
 
 
 @router.message(Command('help'), StateFilter(BotState.CHAT, BotState.START))

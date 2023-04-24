@@ -42,4 +42,6 @@ def get_chat_menu():
     menu_as_markup.resize_keyboard = True
     menu_as_markup.one_time_keyboard = True
     menu_as_markup.input_field_placeholder = 'Нажмите на команду.'
+    menu_as_markup.selective = True
+    menu_as_markup.is_persistent = True
     return menu_as_markup
