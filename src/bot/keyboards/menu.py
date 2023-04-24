@@ -1,6 +1,7 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 cmd_chat = [
+    ('add_role', 'Добавить роль бота.'),
     ('set_role', 'Выбрать роль бота.'),
     ('set_output', 'Выбрать формат ответов.'),
     ('get_user_info', 'Показать данные пользователя.'),

@@ -23,9 +23,40 @@ async def cmd_set_role(message: types.Message, state: FSMContext):
     await message.answer('Выберите роль для ассистента:', reply_markup=role_keyboard)
 
 
-@router.message(Command('add_role'), BotState.CHAT, IS_ADMIN)
-async def cmd_add_role(message: types.Message):
+@router.message(Command('add_role'), BotState.CHAT)
+async def cmd_add_role(message: types.Message, state: FSMContext):
     await message.delete()
+    await message.answer('Введите название роли:')
+    await state.set_state(BotState.ADD_NAME)
+
+
+@router.message(BotState.ADD_NAME)
+async def add_name(message: types.Message, state: FSMContext):
+    await state.set_state(BotState.ADD_DESC)
+    await state.update_data(name=message.text)
+    await message.answer('Введите описание роли:')
+
+
+@router.message(BotState.ADD_DESC)
+async def add_description(message: types.Message, state: FSMContext):
+    await state.set_state(BotState.ADD_PROMPT)
+    await state.update_data(description=message.text)
+    await message.answer('Введите промпт роли:')
+
+
+@router.message(BotState.ADD_PROMPT)
+async def add_description(message: types.Message, state: FSMContext):
+    await state.set_state(BotState.CHAT)
+    await state.update_data(prompt=message.text)
+    data = await state.get_data()
+
+    await prompt_storage.create_prompt(
+        name=data['name'].upper(),
+        description=data['description'],
+        prompt=data['prompt'],
+        author=message.from_user.full_name
+    )
+    await message.answer('Роль добавлена в базу данных.')
 
 
 @router.callback_query(StateFilter(BotState.ROLE))

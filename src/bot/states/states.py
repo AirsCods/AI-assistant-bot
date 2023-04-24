@@ -8,3 +8,6 @@ class BotState(StatesGroup):
     START = State()
     TALK = State()
     TYPE = State()
+    ADD_NAME = State()
+    ADD_DESC = State()
+    ADD_PROMPT = State()

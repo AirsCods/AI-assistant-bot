@@ -12,6 +12,7 @@ class PromptApi:
                         description=description,
                         prompt=prompt,
                         author=author)
+        print(prompt)
         await self.storage.create(prompt)
 
     async def save_all(self, prompts_list: list[Prompt]):
