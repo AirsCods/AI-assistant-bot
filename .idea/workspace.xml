@@ -4,24 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="93112cf6-88fd-4ac0-896a-adbab855b37d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/bot/handlers/chat/menu_cmd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bot/handlers/chat/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bot/handlers/chat/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bot/handlers/chat/assistant.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bot/handlers/chat/assistant.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bot/handlers/chat/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bot/handlers/chat/start.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bot/keyboards/menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bot/keyboards/menu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bot/loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/bot/loader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/llm/llm_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/llm/llm_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/llm/openai_llm.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/llm/openai_llm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/types.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/types.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/storage/history_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/storage/history_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/storage/interface/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/storage/interface/interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/storage/prompt_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/storage/prompt_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/storage/storage.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/storage/storage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/checkers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/checkers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/set_bot_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/set_bot_commands.py" afterDir="false" />
-    </list>
+    <list default="true" id="93112cf6-88fd-4ac0-896a-adbab855b37d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -211,7 +194,7 @@
       <workItem from="1682264258876" duration="2177000" />
       <workItem from="1682349907152" duration="640000" />
       <workItem from="1682400113645" duration="7583000" />
-      <workItem from="1682497417242" duration="987000" />
+      <workItem from="1682497417242" duration="1555000" />
     </task>
     <servers />
   </component>
