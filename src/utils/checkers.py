@@ -47,12 +47,12 @@ async def get_voice_answer_tempfile(answer: str, user_id: int) -> FSInputFile:
 
 
 async def _download_audio_file(audio: types.Audio | types.Voice) -> str:
-    async with bot.download(audio) as file_io:
-        # Преобразование BytesIO объекта в AudioSegment объект
-        audio_segment = AudioSegment.from_file(file_io)
-        # Экспорт аудио файла в формат MP3
-        logger.info('Сохраняю данные аудио в файл')
-        path_file = f"{os.getcwd()}/tmp/{audio.file_id}.mp3"
-        audio_segment.export(path_file, format='mp3')
-
+    file_io = await bot.download(audio)
+    # Преобразование BytesIO объекта в AudioSegment объект
+    audio_segment = AudioSegment.from_file(file_io)
+    # Экспорт аудио файла в формат MP3
+    logger.info('Сохраняю данные аудио в файл')
+    path_file = f"{os.getcwd()}/tmp/{audio.file_id}.mp3"
+    audio_segment.export(path_file, format='mp3')
+    file_io.close()
     return path_file

@@ -2,6 +2,8 @@ from datetime import datetime
 from enum import Enum
 from typing import TypedDict
 
+from bot.states import BotState
+
 
 class RoleType(Enum):
     SYSTEM = 'system'
@@ -20,6 +22,7 @@ class User(TypedDict):
     history: list[Message]
     output_type: str
     bot_role: str
+    state: BotState
     created_ad: datetime
 
 

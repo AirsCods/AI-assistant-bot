@@ -13,7 +13,23 @@ class HistoryApi:
 
     async def create_user(self, user: User) -> None:
         # Сохраняем данные пользователя в бд и кеш
-        await self.storage.create(user)
+        user_id = user['_id']
+        result = await self.storage.read(user_id)
+
+        if result is None:
+            logger.info(f'User {user["name"]} save to MongoDB')
+            await self.storage.create(user)
+
+        else:
+            logger.info(f'User {user["name"]} exist and update to MongoDB')
+            update_data = {
+                'name': user['name'],
+                'history': user['history'],
+                'output_type': user['output_type'],
+                'bot_role': user['bot_role']
+            }
+            await self.storage.update_many(user_id, update_data)
+
         self.cache[user['_id']] = user
 
     async def get_user_data(self, user_id: int) -> User | None:

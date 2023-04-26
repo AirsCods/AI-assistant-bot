@@ -1,11 +1,14 @@
+from cachetools import TTLCache
+from loguru import logger
+
 from models.types import Prompt
 from storage.storage import MongoDBPrompt
 
 
 class PromptApi:
-    def __init__(self, prompt_storage: MongoDBPrompt):
+    def __init__(self, prompt_storage: MongoDBPrompt, cache: TTLCache):
         self.storage: MongoDBPrompt = prompt_storage
-        self.prompts: list[Prompt]
+        self.cache: TTLCache = cache
 
     async def create_prompt(self, name: str, description: str, prompt: str, author: str):
         prompt = Prompt(name=name,
@@ -14,17 +17,38 @@ class PromptApi:
                         author=author)
         print(prompt)
         await self.storage.create(prompt)
+        self.cache[name] = prompt
 
     async def save_all(self, prompts_list: list[Prompt]):
         await self.storage.create_all(prompts_list)
 
     async def get_prompt(self, name: str) -> Prompt:
-        return await self.storage.read(name)
+        if name in self.cache:
+            return self.cache[name]
 
-    async def get_all_prompt(self):
-        return await self.storage.read_all()
+        logger.info(f'Получаю промпт из базы данных')
+        prompt = await self.storage.read(name)
+
+        if prompt:
+            logger.info('Данные получены.')
+            self.cache[name] = prompt
+            return prompt
+
+    async def get_all_prompt(self) -> list[Prompt]:
+        if self.cache:
+            all_prompt = self.cache.values()
+            return list(all_prompt)
+
+        all_prompt = await self.storage.read_all()
+        if all_prompt:
+            logger.info('Данные получены.')
+            for prompt in all_prompt:
+                self.cache[prompt['name']] = prompt
+            return all_prompt
 
     async def delete_prompt(self, name: str):
+        if name in self.cache:
+            self.cache.pop(name)
         await self.storage.delete(name)
 
     async def close(self):

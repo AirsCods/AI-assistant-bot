@@ -18,6 +18,9 @@ class StorageInterface:
     async def update(self, user_id: int, users_field: User.keys, new_data: Any) -> None:
         raise NotImplementedError
 
+    async def update_many(self, user_id: int, update_data: dict[User.keys, str]) -> None:
+        raise NotImplementedError
+
     async def delete(self, user_id: int) -> None:
         raise NotImplementedError
 

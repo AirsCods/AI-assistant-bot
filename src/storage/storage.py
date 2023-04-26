@@ -32,6 +32,9 @@ class DictStorage(StorageInterface):
         self.storage[user_id][users_field] = new_data
         await self.close()
 
+    async def update_many(self, user_id: int, update_data: dict[User.keys, str]) -> None:
+        pass
+
     async def delete(self, user_id: int) -> None:
         self.storage.pop(user_id)
 
@@ -39,7 +42,6 @@ class DictStorage(StorageInterface):
         if self.storage is not None:
             with open(self.file_path, 'wb') as file:
                 logger.info(f'Записываю в файл.')
-                # json.dump(self.storage, file, ensure_ascii=False, indent=4, default=self._serialize_dates)
                 pickle.dump(self.storage, file)
 
 
@@ -50,31 +52,16 @@ class MongoDBStorage(StorageInterface):
         self.storage = self._db_client.ai_assistant_db.users
 
     async def create(self, user: User) -> None:
-        user_id = user['_id']
-        result = await self.storage.find_one(user_id)
-
-        if result is None:
-            logger.info(f'User {user["name"]} save to MongoDB')
-            await self.storage.insert_one(user)
-
-        else:
-            logger.info(f'User {user["name"]} exist and update to MongoDB')
-            self.storage.update_one({'_id': user_id},
-                                    {'$set': {
-                                        'name': user['name'],
-                                        'history': user['history'],
-                                        'output_type': user['output_type'],
-                                        'bot_role': user['bot_role']
-                                    }})
+        await self.storage.insert_one(user)
 
     async def read(self, user_id: int) -> User | None:
         return await self.storage.find_one({'_id': user_id})
 
-    async def update(self,
-                     user_id: int,
-                     users_field: User.keys,
-                     new_data: Any) -> None:
+    async def update(self, user_id: int, users_field: User.keys, new_data: Any) -> None:
         await self.storage.update_one({'_id': user_id}, {'$set': {users_field: new_data}})
+
+    async def update_many(self, user_id: int, update_data: dict[User.keys, str]) -> None:
+        await self.storage.storage.update_one({'_id': user_id}, {'$set': update_data})
 
     async def delete(self, user_id: int) -> None:
         await self.storage.delete_one({'_id': user_id})

@@ -12,8 +12,8 @@ class LlmAgent:
     async def get_speech_to_text(self, audio) -> str:
         return await self.open_ai.get_speech_to_text(audio)
 
-    async def get_start_message_by_role(self, description: str) -> Message:
-        return await self.open_ai.get_start_message_by_role(description)
+    async def get_start_message_by_role(self, prompt: str) -> Message:
+        return await self.open_ai.get_start_message_by_role(prompt)
 
     async def get_chat_response(self, messages: list[Message]):
         return await self.open_ai.get_chat_answer(messages)
