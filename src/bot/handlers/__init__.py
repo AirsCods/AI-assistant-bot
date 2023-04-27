@@ -1,3 +1,3 @@
-from .chat import assistant
+from .chat import router
 
-__all__ = ['assistant']
+__all__ = ['router']

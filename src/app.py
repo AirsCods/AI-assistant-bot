@@ -4,8 +4,7 @@ from loguru import logger
 
 from bot.handlers.chat import router
 from bot.loader import bot, llm, dp, user_storage, prompt_storage
-from utils.notify_admins import on_startup_notify
-from utils.set_bot_commands import set_default_commands
+from bot.utils import on_startup_notify, set_default_commands
 
 
 async def on_startup():

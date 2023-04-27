@@ -77,6 +77,7 @@ async def cmd_go_all(message: types.Message, state: FSMContext):
 
 
 @router.callback_query(Text('help'), StateFilter(BotState.CHAT))
+@router.callback_query(Command('help'), StateFilter(BotState.CHAT))
 async def cmd_help(callback: CallbackQuery):
     await callback.message.delete()
     await callback.answer()

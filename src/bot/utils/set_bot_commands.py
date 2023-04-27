@@ -2,7 +2,7 @@ from aiogram import types, Bot
 from loguru import logger
 
 cmd_tuple = [
-    ('go', 'Начать диалог с ассистентом.'),
+    ('go', 'Открыть меню бота.'),
 ]
 
 

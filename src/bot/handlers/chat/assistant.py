@@ -5,8 +5,8 @@ from loguru import logger
 
 from bot.loader import user_storage, llm
 from bot.states import BotState
+from bot.utils import get_text_question, get_voice_answer
 from models.types import Message, RoleType, User
-from utils.checkers import get_text_question, get_voice_answer
 from .start import router
 
 

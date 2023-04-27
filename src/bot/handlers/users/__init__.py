@@ -1,3 +1,3 @@
-from .start_cmd import router
-
-__all__ = ['router']
+# from .start_cmd import router
+#
+# __all__ = ['router']
