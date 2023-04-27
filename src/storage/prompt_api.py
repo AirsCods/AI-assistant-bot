@@ -46,6 +46,12 @@ class PromptApi:
                 self.cache[prompt['name']] = prompt
             return all_prompt
 
+    async def update_prompt_text(self, name: str, prompt_text: str) -> None:
+        await self.storage.update(name=name, users_field='prompt', new_data=prompt_text)
+
+    async def update_prompt_description(self, name: str, description: str) -> None:
+        await self.storage.update(name=name, users_field='description', new_data=description)
+
     async def delete_prompt(self, name: str):
         if name in self.cache:
             self.cache.pop(name)
