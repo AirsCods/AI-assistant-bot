@@ -19,9 +19,9 @@ OPENAI_CONFIG = {
     'api_key': OPEN_AI_TOKEN,
     # 'model': 'gpt-3.5-turbo',
     'model': 'gpt-4',
-    'temperature': 0.3,
+    'temperature': 0.6,
     'n_choices': 1,
-    'max_tokens': 4000,
+    'max_tokens': 6000,
     'presence_penalty': 0,
     'frequency_penalty': 0,
 }

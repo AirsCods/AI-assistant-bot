@@ -76,15 +76,22 @@ class HistoryApi:
             self.cache[user_id]['bot_role'] = role_name
 
     @staticmethod
-    async def story_shortening(history: list[Message], total_tokens: int, model: str) -> list[Message]:
-        logger.info(f'Total tokens in prompt: {total_tokens}. Clear start of history.')
+    async def story_shortening(history: list[Message], usage_data, model: str) -> list[Message]:
+        total_tokens = usage_data['total_tokens']
+        answer_tokens = usage_data['completion_tokens']
+        prompt_tokens = usage_data['prompt_tokens']
         encoding = tiktoken.encoding_for_model(model)
         tokens_removed = 0
-        last_msg = len(encoding.encode(history[-1]['content']))
 
-        while tokens_removed <= last_msg:
-            tokens_removed += len(encoding.encode(history[4]['content']))
-            del history[4]
+        logger.info(f'Total tokens in response: {total_tokens}.'
+                    f'\nAnswer token in response: {answer_tokens}.'
+                    f'\nPrompt token in response: {prompt_tokens}.'
+                    f'\nClear start of history.')
+
+        # while tokens_removed < answer_tokens:
+        while (total_tokens - tokens_removed) > 8000:
+            tokens_removed += len(encoding.encode(history[3]['content']))
+            del history[3]
 
         logger.info(f'Delete {tokens_removed} tokens in history. Total: {total_tokens - tokens_removed}')
 
