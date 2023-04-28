@@ -52,4 +52,11 @@ async def chat_dialog_handler(message: types.Message):
         os.remove(file_voice.path)
 
     elif user_data['output_type'] == 'text':
-        await message.answer(answer)
+        MAX_MESSAGE_LENGTH = 4096
+
+        if len(answer) > MAX_MESSAGE_LENGTH:
+            for chunk in [answer[i:i + MAX_MESSAGE_LENGTH]
+                          for i in range(0, len(answer), MAX_MESSAGE_LENGTH)]:
+                await message.answer(chunk)
+        else:
+            await message.answer(answer)
