@@ -17,3 +17,6 @@ class LlmAgent:
 
     async def get_chat_response(self, messages: list[Message]):
         return await self.open_ai.get_chat_answer(messages)
+
+    def get_model(self) -> str:
+        return self.open_ai.model

@@ -31,9 +31,16 @@ async def chat_dialog_handler(message: types.Message):
     ai_message = Message(role=RoleType.ASSISTANT.value, content=answer)
     history_messages.append(ai_message)
 
+    model = llm.get_model()
+    if '3.5' in model:
+        max_token = 2200
+    elif '4' in model:
+        max_token = 7200
+    else:
+        max_token = 2000
     # Проверка длинны истории
-    if usage_data.total_tokens > 2200:
-        history_messages = await user_storage.story_shortening(history_messages, usage_data.total_tokens)
+    if usage_data.total_tokens > max_token:
+        history_messages = await user_storage.story_shortening(history_messages, usage_data.total_tokens, model)
 
     # Сохраняю историю сообщений в БД
     await user_storage.update_history_messages(user_id, message_history=history_messages)

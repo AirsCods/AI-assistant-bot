@@ -19,5 +19,5 @@ prompt_cache: TTLCache = TTLCache(maxsize=1000, ttl=3600)
 prompt_storage = PromptApi(prompt_storage=db_prompt, cache=prompt_cache)
 
 llm = LlmAgent(OPENAI_CONFIG)
-bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.MARKDOWN)
 dp = Dispatcher(bot=bot, storage=MemoryStorage())

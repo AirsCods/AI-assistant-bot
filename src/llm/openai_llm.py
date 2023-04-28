@@ -34,6 +34,11 @@ class StartMessage:
                 message = Message(role=RoleType.SYSTEM.value, content=prompt)
                 self._start_message = message
 
+            case 'gpt-4':
+                prompt = self.get_prompt_by_role(prompt)
+                message = Message(role=RoleType.SYSTEM.value, content=prompt)
+                self._start_message = message
+
         return message
 
     @staticmethod
@@ -45,9 +50,8 @@ class StartMessage:
                  f'{suffix}'
         return prompt
 
-    @staticmethod
-    def get_len_token(data: str) -> int:
-        encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
+    def get_len_token(self, data: str) -> int:
+        encoding = tiktoken.encoding_for_model(self._model)
         encode_data = encoding.encode(data)
         return len(encode_data)
 
@@ -55,11 +59,12 @@ class StartMessage:
 class OpenAI:
     def __init__(self, config: dict):
         self.config = config
+        self.model = config['model']
         openai.api_key = self.config['api_key']
         self._start_message: Optional[StartMessage] = None
 
     async def start(self):
-        self._start_message = StartMessage(model=self.config['model'])
+        self._start_message = StartMessage(model=self.model)
 
     async def get_start_message_by_role(self, prompt: str) -> Message:
         return self._start_message.get_start_message(prompt)
@@ -81,7 +86,7 @@ class OpenAI:
         try:
             response = await openai.ChatCompletion.acreate(
                 messages=messages,
-                model=self.config['model'],
+                model=self.model,
                 temperature=self.config['temperature'],
                 n=self.config['n_choices'],
                 max_tokens=self.config['max_tokens'],

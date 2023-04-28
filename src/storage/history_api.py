@@ -76,10 +76,9 @@ class HistoryApi:
             self.cache[user_id]['bot_role'] = role_name
 
     @staticmethod
-    async def story_shortening(history: list[Message], total_tokens: int) -> list[Message]:
+    async def story_shortening(history: list[Message], total_tokens: int, model: str) -> list[Message]:
         logger.info(f'Total tokens in prompt: {total_tokens}. Clear start of history.')
-
-        encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
+        encoding = tiktoken.encoding_for_model(model)
         tokens_removed = 0
 
         while tokens_removed < 400:
