@@ -80,11 +80,12 @@ class HistoryApi:
         logger.info(f'Total tokens in prompt: {total_tokens}. Clear start of history.')
         encoding = tiktoken.encoding_for_model(model)
         tokens_removed = 0
+        last_msg = len(encoding.encode(history[-1]['content']))
 
-        while tokens_removed < 400:
-            for i in range(2):
-                tokens_removed += len(encoding.encode(history[4]['content']))
-                del history[4]
+        while tokens_removed <= last_msg:
+            tokens_removed += len(encoding.encode(history[4]['content']))
+            del history[4]
+
         logger.info(f'Delete {tokens_removed} tokens in history. Total: {total_tokens - tokens_removed}')
 
         return history
