@@ -11,13 +11,13 @@ class PromptApi:
         self.cache: TTLCache = cache
 
     async def create_prompt(self, name: str, description: str, prompt: str, author: str):
-        prompt = Prompt(name=name,
-                        description=description,
-                        prompt=prompt,
-                        author=author)
-        print(prompt)
-        await self.storage.create(prompt)
-        self.cache[name] = prompt
+
+        prompt_role = Prompt(name=name,
+                             description=description,
+                             prompt=prompt,
+                             author=author)
+        await self.storage.create(prompt_role)
+        self.cache[name] = prompt_role
 
     async def save_all(self, prompts_list: list[Prompt]):
         await self.storage.create_all(prompts_list)
@@ -35,13 +35,14 @@ class PromptApi:
             return prompt
 
     async def get_all_prompt(self) -> list[Prompt]:
-        if self.cache:
+        len_db = await self.storage.storage.count_documents({})
+        if len(self.cache) == len_db:
             all_prompt = self.cache.values()
             return list(all_prompt)
 
         all_prompt = await self.storage.read_all()
         if all_prompt:
-            logger.info('Данные получены.')
+            logger.info('Данные всех промптов из базы данных получены.')
             for prompt in all_prompt:
                 self.cache[prompt['name']] = prompt
             return all_prompt

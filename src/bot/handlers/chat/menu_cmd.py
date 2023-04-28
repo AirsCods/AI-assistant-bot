@@ -3,7 +3,7 @@ from aiogram.filters import StateFilter, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
-from bot.keyboards import get_role_keyboard, get_type_keyboard
+from bot.keyboards import get_role_keyboard, get_type_keyboard, get_change_keyboard
 from bot.loader import user_storage, llm, prompt_storage
 from bot.states import BotState
 from models.types import Message, User, Prompt
@@ -17,6 +17,7 @@ async def cmd_set_role(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
 
     prompts = await prompt_storage.get_all_prompt()
+    print(prompts)
     role_keyboard = get_role_keyboard(prompts)
 
     await callback.answer()
@@ -43,7 +44,7 @@ async def callback_set_role(callback: CallbackQuery, state: FSMContext):
 
 
 # Установить тип ответа
-@router.callback_query(Text('set_output'), StateFilter(BotState.CHAT))
+@router.callback_query(StateFilter(BotState.CHAT), Text('set_output'))
 async def cmd_set_output(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.TYPE)
     await callback.message.delete()
@@ -107,7 +108,7 @@ async def cdm_get_history(callback: CallbackQuery):
     user_id = callback.from_user.id
     user_data: User = await user_storage.get_user_data(user_id)
 
-    history_messages_str = f'------------------{callback.from_user.username} message history--------------------\n'
+    history_messages_str = f'------ >{callback.from_user.username}< message history------\n'
     history_messages: list[Message] = user_data['history']
     for item in history_messages:
         role = str(item["role"]).capitalize()
@@ -117,35 +118,105 @@ async def cdm_get_history(callback: CallbackQuery):
         history_messages_str += f'>> {role} : {content}\n'
 
     history_messages_str = history_messages_str[:-1]
+    print('\n\n\n' + history_messages_str)
     await callback.message.answer(history_messages_str)
 
 
-# Добавление роли
-@router.callback_query(StateFilter(BotState.CHAT), Text('/add_role'))
-async def cmd_add_role(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(BotState.ADD_NAME)
+# Обновление текста промпта
+@router.callback_query(StateFilter(BotState.CHAT), Text('update_role'))
+async def update_prompt_text(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(BotState.UPDATE_PROMPT)
     await callback.message.delete()
+
+    prompts = await prompt_storage.get_all_prompt()
+    role_keyboard = get_role_keyboard(prompts)
+
+    await callback.answer()
+    await callback.message.answer('Выберите роль для изменения', reply_markup=role_keyboard)
+
+
+@router.callback_query(StateFilter(BotState.UPDATE_PROMPT))
+async def callback_set_role(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(BotState.CHOOSE_UPDATE)
+    await callback.message.delete()
+
+    role_name = callback.data
+    await state.update_data(name=role_name)
+    await callback.answer(text=f'Вы выбрали роль для изменений текста: {role_name}.', show_alert=True)
+
+    change_keyboard = get_change_keyboard()
+    await callback.message.answer('Что изменить у роли:', reply_markup=change_keyboard)
+
+
+@router.callback_query(StateFilter(BotState.CHOOSE_UPDATE), Text('prompt'))
+async def callback_set_text(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(BotState.CHANGE_TEXT)
+    await callback.message.delete()
+    await callback.message.answer('Введите новый промпт роли:')
+
+
+@router.message(BotState.CHANGE_TEXT)
+async def change_prompt(message: types.Message, state: FSMContext):
+    await state.set_state(BotState.CHAT)
+    await message.delete()
+
+    state_data = await state.get_data()
+    role_name = state_data['name']
+    new_prompt_text = message.text
+
+    await prompt_storage.update_prompt_text(name=role_name, prompt_text=new_prompt_text)
+    await message.answer('Промпт роли изменен!')
+
+
+@router.callback_query(StateFilter(BotState.CHOOSE_UPDATE), Text('description'))
+async def callback_set_text(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(BotState.CHANGE_DESC)
+    await callback.message.delete()
+    await callback.message.answer('Введите новое описание роли:')
+
+
+@router.message(BotState.CHANGE_TEXT)
+async def change_prompt(message: types.Message, state: FSMContext):
+    await state.set_state(BotState.CHAT)
+    await message.delete()
+
+    state_data = await state.get_data()
+    role_name = state_data['name']
+    new_prompt_desc = message.text
+
+    await prompt_storage.update_prompt_description(name=role_name, description=new_prompt_desc)
+    await message.answer('Описание роли изменено!')
+
+
+# Добавление роли
+@router.callback_query(StateFilter(BotState.CHAT), Text('add_role'))
+async def cmd_add_role(callback: CallbackQuery, state: FSMContext):
+    await callback.message.delete()
+    await state.set_state(BotState.ADD_NAME)
     await callback.message.answer('Введите название роли:')
 
 
-@router.callback_query(StateFilter(BotState.ADD_NAME))
-async def add_name(callback: CallbackQuery, state: FSMContext):
+@router.message(StateFilter(BotState.ADD_NAME))
+async def add_name(message: types.Message, state: FSMContext):
     await state.set_state(BotState.ADD_DESC)
-    await state.update_data(name=callback.message.text)
-    await callback.message.answer('Введите описание роли:')
+    await state.update_data(name=message.text)
+    await message.delete()
+    await message.answer('Введите описание роли:')
 
 
-@router.callback_query(StateFilter(BotState.ADD_DESC))
-async def add_description(callback: CallbackQuery, state: FSMContext):
+@router.message(StateFilter(BotState.ADD_DESC))
+async def add_description(message: types.Message, state: FSMContext):
     await state.set_state(BotState.ADD_PROMPT)
-    await state.update_data(description=callback.message.text)
-    await callback.message.answer('Введите промпт роли:')
+    await state.update_data(description=message.text)
+    await message.delete()
+    await message.answer('Введите промпт роли:')
 
 
 @router.message(BotState.ADD_PROMPT)
 async def add_prompt(message: types.Message, state: FSMContext):
     await state.set_state(BotState.CHAT)
     await state.update_data(prompt=message.text)
+    await message.delete()
     data = await state.get_data()
 
     await prompt_storage.create_prompt(

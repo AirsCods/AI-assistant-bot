@@ -66,6 +66,7 @@ async def cmd_go_all(message: types.Message, state: FSMContext):
     await message.delete()
     user_id = message.from_user.id
     user_data: User = await user_storage.get_user_data(user_id)
+
     if user_data:
         role_name = user_data['bot_role']
         await state.set_state(BotState.CHAT)

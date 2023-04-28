@@ -2,6 +2,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 cmd_chat = [
     ('add_role', 'Добавить роль бота.'),
+    ('update_role', 'Обновить роль бота.'),
     ('set_role', 'Выбрать роль бота.'),
     ('set_output', 'Выбрать формат ответов.'),
     ('get_user_info', 'Показать данные пользователя.'),
@@ -19,8 +20,8 @@ def get_start_menu():
     start_menu = InlineKeyboardBuilder()
     for cmd, description in cmd_start:
         start_menu.button(
-            text=f'{cmd}',
-            callback_data=f'cmd_{cmd}'
+            text=cmd,
+            callback_data=cmd
         )
     start_menu.adjust(3)
     menu_as_markup = start_menu.as_markup()

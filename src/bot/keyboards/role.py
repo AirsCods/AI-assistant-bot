@@ -27,3 +27,19 @@ def get_type_keyboard():
     choose_type_keyboard.adjust(2)
 
     return choose_type_keyboard.as_markup()
+
+
+def get_change_keyboard():
+    choose_type_keyboard = InlineKeyboardBuilder()
+    choose_type_keyboard.button(
+        text='Prompt',
+        callback_data='prompt'
+    )
+    choose_type_keyboard.button(
+        text='Description',
+        callback_data='description'
+    )
+
+    choose_type_keyboard.adjust(2)
+
+    return choose_type_keyboard.as_markup()
