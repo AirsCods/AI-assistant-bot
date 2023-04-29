@@ -40,7 +40,6 @@ class HistoryApi:
         user_data: User = await self.storage.read(user_id)
 
         if user_data:
-            logger.info('Данные получены')
             self.cache[user_id] = user_data
             return user_data
 
@@ -78,15 +77,9 @@ class HistoryApi:
     @staticmethod
     async def story_shortening(history: list[Message], usage_data, model: str) -> list[Message]:
         total_tokens = usage_data['total_tokens']
-        answer_tokens = usage_data['completion_tokens']
-        prompt_tokens = usage_data['prompt_tokens']
+
         encoding = tiktoken.encoding_for_model(model)
         tokens_removed = 0
-
-        logger.info(f'Total tokens in response: {total_tokens}.'
-                    f'\nAnswer token in response: {answer_tokens}.'
-                    f'\nPrompt token in response: {prompt_tokens}.'
-                    f'\nClear start of history.')
 
         # while tokens_removed < answer_tokens:
         while (total_tokens - tokens_removed) > 8000:
@@ -94,8 +87,6 @@ class HistoryApi:
             tokens_removed += len(encoding.encode(history[4]['content']))
             del history[3]
             del history[4]
-
-        logger.info(f'Delete {tokens_removed} tokens in history. Total: {total_tokens - tokens_removed}')
 
         return history
 

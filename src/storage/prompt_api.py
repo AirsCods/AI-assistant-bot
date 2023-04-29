@@ -1,5 +1,4 @@
 from cachetools import TTLCache
-from loguru import logger
 
 from models.types import Prompt
 from storage.storage import MongoDBPrompt
@@ -26,11 +25,9 @@ class PromptApi:
         if name in self.cache:
             return self.cache[name]
 
-        logger.info(f'Получаю промпт из базы данных')
         prompt = await self.storage.read(name)
 
         if prompt:
-            logger.info('Данные получены.')
             self.cache[name] = prompt
             return prompt
 
@@ -42,7 +39,6 @@ class PromptApi:
 
         all_prompt = await self.storage.read_all()
         if all_prompt:
-            logger.info('Данные всех промптов из базы данных получены.')
             for prompt in all_prompt:
                 self.cache[prompt['name']] = prompt
             return all_prompt

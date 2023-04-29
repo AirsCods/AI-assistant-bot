@@ -41,7 +41,6 @@ class DictStorage(StorageInterface):
     async def close(self) -> None:
         if self.storage is not None:
             with open(self.file_path, 'wb') as file:
-                logger.info(f'Записываю в файл.')
                 pickle.dump(self.storage, file)
 
 
