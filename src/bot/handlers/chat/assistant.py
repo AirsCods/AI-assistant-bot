@@ -24,12 +24,16 @@ async def chat_dialog_handler(message: types.Message):
     user_message = Message(role=RoleType.USER.value, content=question)
     history_messages.append(user_message)
 
+    # Check len
+    history_messages = await llm.check_len_history(history_messages)
+
     # Получаю ответ от ChatGPT
     answer, usage_data = await llm.get_chat_response(history_messages)
 
     # Создаю сообщение ассистента и добавляю в историю сообщений
     ai_message = Message(role=RoleType.ASSISTANT.value, content=answer)
     history_messages.append(ai_message)
+    logger.info('Check len new history')
 
     model = llm.get_model()
     if '3.5' in model:
@@ -38,9 +42,9 @@ async def chat_dialog_handler(message: types.Message):
         max_token = 7200
     else:
         max_token = 2000
-
+    print(usage_data)
     # Проверка длинны истории
-    if usage_data.total_tokens > max_token:
+    if usage_data.total_tokens >= max_token:
         history_messages = await user_storage.story_shortening(history_messages, usage_data, model)
 
     # Сохраняю историю сообщений в БД

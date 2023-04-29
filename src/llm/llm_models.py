@@ -1,3 +1,6 @@
+import tiktoken
+from loguru import logger
+
 from llm.openai_llm import OpenAI
 from models.types import Message
 
@@ -20,3 +23,17 @@ class LlmAgent:
 
     def get_model(self) -> str:
         return self.open_ai.model
+
+    async def check_len_history(self, history: list[Message]):
+        encoding = tiktoken.encoding_for_model(self.open_ai.model)
+        all_len = 0
+        for message in history:
+            all_len += len(encoding.encode(message['content']))
+
+        if all_len > 8100:
+            logger.info('Shorting history')
+            while all_len > 8100:
+                all_len -= len(encoding.encode(history[3]['content']))
+                del history[3]
+
+        return history

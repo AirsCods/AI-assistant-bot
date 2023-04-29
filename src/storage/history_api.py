@@ -91,7 +91,9 @@ class HistoryApi:
         # while tokens_removed < answer_tokens:
         while (total_tokens - tokens_removed) > 8000:
             tokens_removed += len(encoding.encode(history[3]['content']))
+            tokens_removed += len(encoding.encode(history[4]['content']))
             del history[3]
+            del history[4]
 
         logger.info(f'Delete {tokens_removed} tokens in history. Total: {total_tokens - tokens_removed}')
 

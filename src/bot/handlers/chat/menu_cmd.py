@@ -118,8 +118,14 @@ async def cdm_get_history(callback: CallbackQuery):
         history_messages_str += f'>> {role} : {content}\n'
 
     history_messages_str = history_messages_str[:-1]
-    print('\n\n\n' + history_messages_str)
-    await callback.message.answer(history_messages_str)
+    MAX_MESSAGE_LENGTH = 4096
+
+    if len(history_messages_str) > MAX_MESSAGE_LENGTH:
+        for chunk in [history_messages_str[i:i + MAX_MESSAGE_LENGTH]
+                      for i in range(0, len(history_messages_str), MAX_MESSAGE_LENGTH)]:
+            await callback.message.answer(chunk)
+    else:
+        await callback.message.answer(history_messages_str)
 
 
 # Обновление текста промпта
