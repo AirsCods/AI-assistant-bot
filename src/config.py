@@ -1,6 +1,8 @@
 import os
+import sys
 
 from dotenv import load_dotenv
+from loguru import logger
 
 load_dotenv()
 ADMIN_ID = os.getenv('ADMIN_ID')
@@ -31,3 +33,24 @@ DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_NAME = os.getenv('DB_NAME')
 DB_URL_CONNECT = f'mongodb+srv://AirsCods:{DB_PASSWORD}@cluster0.ixbwg99.mongodb.net/?retryWrites=true&w=majority'
+
+# Configuration loguru input
+logger.remove()
+
+if DEBUG:
+    logger.add(
+        sys.stdout,
+        format='<yellow>{time:DD-MMM-YYYY HH:mm:ss}</yellow> | <green>{level}</green> | '
+               '{file} | <red>{function}</red> | <cyan>{message}</cyan>',
+        colorize=True,
+        level='INFO',
+    )
+else:
+    logger.add(
+        'logs/log_{time:DD-MMM-YYYY}.log',
+        rotation='00:00',
+        retention='7 days',
+        format='{time:DD-MMM-YYYY HH:mm:ss} | {level} | {message}',
+        colorize=True,
+        level='INFO',
+    )
