@@ -17,7 +17,6 @@ async def cmd_set_role(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
 
     prompts = await prompt_storage.get_all_prompt()
-    print(prompts)
     role_keyboard = get_role_keyboard(prompts)
 
     await callback.answer()

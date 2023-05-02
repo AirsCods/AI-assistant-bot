@@ -42,7 +42,6 @@ async def chat_dialog_handler(message: types.Message):
         max_token = 7200
     else:
         max_token = 2000
-    print(usage_data)
     # Проверка длинны истории
     if usage_data.total_tokens >= max_token:
         history_messages = await user_storage.story_shortening(history_messages, usage_data, model)
