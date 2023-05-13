@@ -19,11 +19,11 @@ SHOW_USAGE = os.getenv('SHOW_USAGE')
 OPEN_AI_TOKEN = os.getenv('OPEN_AI_TOKEN')
 OPENAI_CONFIG = {
     'api_key': OPEN_AI_TOKEN,
-    # 'model': 'gpt-3.5-turbo',
-    'model': 'gpt-4',
-    'temperature': 0.6,
+    'model': 'gpt-3.5-turbo',
+    # 'model': 'gpt-4',
+    'temperature': 0.4,
     'n_choices': 1,
-    'max_tokens': 6000,
+    'max_tokens': 2000,
     'presence_penalty': 0,
     'frequency_penalty': 0,
 }
