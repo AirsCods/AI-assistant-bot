@@ -1,5 +1,6 @@
 import os
 import tempfile
+from typing import Optional
 
 from aiogram import types
 from aiogram.enums import ContentType
@@ -12,6 +13,7 @@ from bot.loader import llm, bot
 
 
 async def get_text_question(message: types.Message) -> str:
+    question = ''
     if message.content_type == ContentType.VOICE:
         path_file = await _download_audio_file(message.voice)
         question = await llm.get_speech_to_text(path_file)

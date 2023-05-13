@@ -1,3 +1,5 @@
+from typing import Optional
+
 import tiktoken
 from cachetools import TTLCache
 from loguru import logger
@@ -12,14 +14,16 @@ class HistoryApi:
         self.cache: TTLCache = cache
 
     async def create_user(self, user: User) -> None:
-        # Сохраняем данные пользователя в бд и кеш
         user_id = user['_id']
-        result = await self.storage.read(user_id)
+        try:
+            result = await self.storage.read(user_id)
+        except Exception as e:
+            logger.error(f"Error reading user data from database: {e}")
+            return
 
         if result is None:
             logger.info(f'User {user["name"]} save to MongoDB')
             await self.storage.create(user)
-
         else:
             logger.info(f'User {user["name"]} exist and update to MongoDB')
             update_data = {
@@ -32,25 +36,27 @@ class HistoryApi:
 
         self.cache[user['_id']] = user
 
-    async def get_user_data(self, user_id: int) -> User | None:
+    async def get_user_data(self, user_id: int) -> Optional[User]:
         if user_id in self.cache:
             return self.cache[user_id]
 
         logger.info(f'Получаю данные пользователя из базы данных')
-        user_data: User = await self.storage.read(user_id)
+        try:
+            user_data: User = await self.storage.read(user_id)
+        except Exception as e:
+            logger.error(f"Error reading user data from database: {e}")
+            return None
 
         if user_data:
             self.cache[user_id] = user_data
             return user_data
 
     async def update_history_messages(self, user_id: int, message_history: list[Message]):
-        # Обновляем историю сообщений в базе данных
         await self.storage.update(
             user_id=user_id,
             users_field='history',
             new_data=message_history
         )
-        # Обновляем историю сообщений в кэше
         if user_id in self.cache:
             self.cache[user_id]['history'] = message_history
 
@@ -60,7 +66,6 @@ class HistoryApi:
             users_field='output_type',
             new_data=type_output
         )
-        # Обновляем настройки бота в кэше
         if user_id in self.cache:
             self.cache[user_id]['output_type'] = type_output
 
@@ -70,7 +75,6 @@ class HistoryApi:
             users_field='bot_role',
             new_data=role_name
         )
-        # Обновляем настройки бота в кэше
         if user_id in self.cache:
             self.cache[user_id]['bot_role'] = role_name
 
@@ -82,7 +86,7 @@ class HistoryApi:
         tokens_removed = 0
 
         # while tokens_removed < answer_tokens:
-        while (total_tokens - tokens_removed) > 8000:
+        while (total_tokens - tokens_removed) > 4000:
             tokens_removed += len(encoding.encode(history[3]['content']))
             tokens_removed += len(encoding.encode(history[4]['content']))
             del history[3]

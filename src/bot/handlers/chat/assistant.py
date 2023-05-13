@@ -21,30 +21,15 @@ async def chat_dialog_handler(message: types.Message):
     history_messages: list[Message] = user_data['history']
 
     # Создаю сообщение пользователя и добавляю к истории сообщений
-    user_message = Message(role=RoleType.USER.value, content=question)
-    history_messages.append(user_message)
+    history_messages.append(Message(role=RoleType.USER.value, content=question))
 
-    # Check len
     history_messages = await llm.check_len_history(history_messages)
 
     # Получаю ответ от ChatGPT
     answer, usage_data = await llm.get_chat_response(history_messages)
 
     # Создаю сообщение ассистента и добавляю в историю сообщений
-    ai_message = Message(role=RoleType.ASSISTANT.value, content=answer)
-    history_messages.append(ai_message)
-    logger.info('Check len new history')
-
-    model = llm.get_model()
-    if '3.5' in model:
-        max_token = 2200
-    elif '4' in model:
-        max_token = 7200
-    else:
-        max_token = 2000
-    # Проверка длинны истории
-    if usage_data.total_tokens >= max_token:
-        history_messages = await user_storage.story_shortening(history_messages, usage_data, model)
+    history_messages.append(Message(role=RoleType.ASSISTANT.value, content=answer))
 
     # Сохраняю историю сообщений в БД
     await user_storage.update_history_messages(user_id, message_history=history_messages)
@@ -58,9 +43,8 @@ async def chat_dialog_handler(message: types.Message):
     elif user_data['output_type'] == 'text':
         MAX_MESSAGE_LENGTH = 4096
 
-        if len(answer) > MAX_MESSAGE_LENGTH:
-            for chunk in [answer[i:i + MAX_MESSAGE_LENGTH]
-                          for i in range(0, len(answer), MAX_MESSAGE_LENGTH)]:
-                await message.answer(chunk)
-        else:
-            await message.answer(answer)
+        text_parts = [answer[i:i + MAX_MESSAGE_LENGTH]
+                      for i in range(0, len(answer), MAX_MESSAGE_LENGTH)]
+
+        for part in text_parts:
+            await message.answer(part)
