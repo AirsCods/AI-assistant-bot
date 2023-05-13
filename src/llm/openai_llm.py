@@ -2,7 +2,6 @@ import os
 from typing import Optional
 
 import openai
-import tiktoken
 from loguru import logger
 
 from models.types import Message, RoleType
@@ -10,13 +9,11 @@ from models.types import Message, RoleType
 
 class StartMessage:
     def __init__(self, model: str):
-        self.GPT_MODELS = ("gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314")
+        self.GPT_MODELS = ("gpt-3.5-turbo", "gpt-4")
         self._len_start_message = None
 
         self._model: str = model
         self._start_message: Optional[Message] = None
-
-        self.set_model(model)
 
     def set_model(self, model: str):
         """ Устанавливает модель для ChatGPT"""
@@ -40,11 +37,6 @@ class StartMessage:
                  f'{prompt}\n' \
                  f'{suffix}'
         return prompt
-
-    def get_len_token(self, data: str) -> int:
-        encoding = tiktoken.encoding_for_model(self._model)
-        encode_data = encoding.encode(data)
-        return len(encode_data)
 
 
 class OpenAI:

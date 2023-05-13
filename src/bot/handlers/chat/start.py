@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from bot.keyboards import get_chat_menu, get_role_keyboard
-from bot.loader import user_storage, llm, prompt_storage
+from bot.loader import user_storage, llm, prompt_storage, bot
 from bot.states import BotState
 from models.types import User, Prompt
 
@@ -53,7 +53,7 @@ async def add_user(callback: CallbackQuery, state: FSMContext):
 
 
 # Команда открытия меню
-@router.message(Command('go'), BotState.CHAT)
+@router.message(Command('menu'), BotState.CHAT)
 async def cmd_go_chat(message: types.Message):
     await message.delete()
     chat_menu = get_chat_menu()
@@ -69,10 +69,13 @@ async def cmd_go_all(message: types.Message, state: FSMContext):
 
     if user_data:
         role_name = user_data['bot_role']
+        await bot.set_my_commands([types.BotCommand(command='menu', description='Open menu.')])
         await state.set_state(BotState.CHAT)
         await message.answer(f'C возращением {message.from_user.username}.\n'
                              f'Вы общаетесь с {role_name}.')
+
     else:
+        await bot.set_my_commands([types.BotCommand(command='start', description='Start bot.')])
         await message.answer(f'Мы с вами не знакомы {message.from_user.first_name}\n'
                              f' Для регистрации нажмите команду /start.')
 
@@ -84,6 +87,6 @@ async def cmd_help(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer(
         'Бот поддерживает следующие команды:\n'
-        '/go - Открыть меню.\n'
+        '/menu - Открыть меню.\n'
         '/help - Помощь!'
     )
