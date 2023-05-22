@@ -4,7 +4,7 @@ import tiktoken
 from cachetools import TTLCache
 from loguru import logger
 
-from models.types import Message, User
+from models import Message, User
 from storage.interface import StorageInterface
 
 

@@ -1,6 +1,6 @@
 from typing import Any
 
-from models.types import User
+from models import User
 
 
 class StorageInterface:

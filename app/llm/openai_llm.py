@@ -11,9 +11,7 @@ class StartMessage:
     def __init__(self, model: str):
         self.GPT_MODELS = ("gpt-3.5-turbo", "gpt-4")
         self._len_start_message = None
-
         self._model: str = model
-        self._start_message: Optional[Message] = None
 
     def set_model(self, model: str):
         """ Устанавливает модель для ChatGPT"""
@@ -23,10 +21,9 @@ class StartMessage:
             raise NameError
 
     def get_start_message(self, prompt: str) -> Message:
-        if self._model == 'gpt-3.5-turbo' or self._model == 'gpt-4':
+        if self._model in self.GPT_MODELS:
             prompt = self.get_prompt_by_role(prompt)
             message = Message(role=RoleType.SYSTEM.value, content=prompt)
-            self._start_message = message
             return message
 
     @staticmethod
@@ -45,22 +42,15 @@ class OpenAI:
         openai.api_key = self.config['api_key']
 
         self.model = config['model']
-        self.max_len = None
-
-        self._start_message: Optional[StartMessage] = None
-
-    async def start(self):
         self._start_message = StartMessage(model=self.model)
-        self.get_max_len()
+        self.max_len = self.get_max_len()
 
-    def get_max_len(self):
+    def get_max_len(self) -> int:
         match self.model:
-
             case 'gpt-3.5-turbo':
-                self.max_len = 4000
-
+                return 4000
             case 'gpt-4':
-                self.model = 8000
+                return 8000
 
     async def get_start_message_by_role(self, prompt: str) -> Message:
         return self._start_message.get_start_message(prompt)

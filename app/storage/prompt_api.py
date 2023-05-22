@@ -1,6 +1,6 @@
 from cachetools import TTLCache
 
-from models.types import Prompt
+from models import Prompt
 from storage.storage import MongoDBPrompt
 
 
@@ -42,6 +42,13 @@ class PromptApi:
             for prompt in all_prompt:
                 self.cache[prompt['name']] = prompt
             return all_prompt
+
+    async def update_prompt(self, role_name: str, type_text: str, new_prompt_text: str):
+        if type_text == 'text':
+            field = 'prompt'
+        else:
+            field = 'description'
+        await self.storage.update(name=role_name, users_field=field, new_data=new_prompt_text)
 
     async def update_prompt_text(self, name: str, prompt_text: str) -> None:
         await self.storage.update(name=name, users_field='prompt', new_data=prompt_text)

@@ -1,14 +1,12 @@
-import datetime
-
 from aiogram import Router, types
-from aiogram.filters import StateFilter, CommandStart, Text, Command
+from aiogram.filters import CommandStart, StateFilter, Command, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
-from bot.keyboards import get_chat_menu, get_role_keyboard
-from bot.loader import user_storage, llm, prompt_storage, bot
+from bot.keyboards import get_role_keyboard, get_chat_menu
 from bot.states import BotState
-from models.types import User, Prompt
+from loader import bot_core
+from models import User
 
 router = Router()
 
@@ -21,7 +19,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     answer = f'Добро пожаловать {message.from_user.full_name}! Вас приветствует бот-ассистент.\n' \
              f'Выберите роль для ассистента:\n'
-    prompts = await prompt_storage.get_all_prompt()
+
+    prompts = await bot_core.get_all_prompt()
 
     role_keyboard = get_role_keyboard(prompts)
     await message.answer(answer, reply_markup=role_keyboard)
@@ -33,21 +32,11 @@ async def add_user(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.CHAT)
     await callback.message.delete()
     role_name = callback.data
-    prompt_obj: Prompt = await prompt_storage.get_prompt(role_name)
-    prompt = prompt_obj['prompt']
-    start_message = await llm.get_start_message_by_role(prompt)
+    user_id = callback.from_user.id
+    user_name = callback.from_user.full_name
 
-    user = User(
-        _id=callback.from_user.id,
-        name=callback.from_user.full_name,
-        created_ad=datetime.datetime.utcnow(),
-        history=[start_message],
-        output_type='text',
-        bot_role=role_name,
-        state=BotState.CHAT.state
-    )
+    await bot_core.add_user(user_id, user_name, role_name)
 
-    await user_storage.create_user(user)
     await callback.answer(text=f'Ассистент в роли {role_name} готов к диалогу!🎱', show_alert=True)
     await callback.message.answer(f'Ассистент в роли {role_name} готов к диалогу!🎱')
 
@@ -65,17 +54,15 @@ async def cmd_go_chat(message: types.Message):
 async def cmd_go_all(message: types.Message, state: FSMContext):
     await message.delete()
     user_id = message.from_user.id
-    user_data: User = await user_storage.get_user_data(user_id)
+    user_data: User = await bot_core.user_storage.get_user_data(user_id)
 
     if user_data:
         role_name = user_data['bot_role']
-        await bot.set_my_commands([types.BotCommand(command='menu', description='Open menu.')])
         await state.set_state(BotState.CHAT)
         await message.answer(f'C возращением {message.from_user.username}.\n'
                              f'Вы общаетесь с {role_name}.')
 
     else:
-        await bot.set_my_commands([types.BotCommand(command='start', description='Start bot.')])
         await message.answer(f'Мы с вами не знакомы {message.from_user.first_name}\n'
                              f' Для регистрации нажмите команду /start.')
 

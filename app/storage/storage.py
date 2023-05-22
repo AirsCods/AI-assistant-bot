@@ -4,7 +4,7 @@ from typing import Any
 from loguru import logger
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
-from models.types import User, Prompt
+from models import User, Prompt
 from storage.interface import StorageInterface
 
 
@@ -44,7 +44,7 @@ class DictStorage(StorageInterface):
                 pickle.dump(self.storage, file)
 
 
-class MongoDBStorage(StorageInterface):
+class MongoDBUser(StorageInterface):
     def __init__(self, url_connect: str):
         super().__init__()
         self._db_client: AsyncIOMotorClient = AsyncIOMotorClient(url_connect)

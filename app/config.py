@@ -15,6 +15,7 @@ DEBUG = os.getenv('DEBUG')
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 SHOW_USAGE = os.getenv('SHOW_USAGE')
+MAX_MESSAGE_LENGTH = 4096
 
 OPEN_AI_TOKEN = os.getenv('OPEN_AI_TOKEN')
 OPENAI_CONFIG = {

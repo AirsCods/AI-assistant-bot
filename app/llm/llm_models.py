@@ -1,16 +1,13 @@
 import tiktoken
 from loguru import logger
 
-from llm.openai_llm import OpenAI
 from models.types import Message
+from .openai_llm import OpenAI
 
 
 class LlmAgent:
     def __init__(self, openai_config: dict):
         self.open_ai = OpenAI(config=openai_config)
-
-    async def start_agent(self):
-        await self.open_ai.start()
 
     async def get_speech_to_text(self, audio) -> str:
         return await self.open_ai.get_speech_to_text(audio)
