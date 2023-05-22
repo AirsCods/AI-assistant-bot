@@ -22,7 +22,6 @@ async def chat_dialog_handler(message: types.Message):
 
     # Создаю сообщение пользователя и добавляю к истории сообщений
     history_messages.append(Message(role=RoleType.USER.value, content=question))
-
     history_messages = await llm.check_len_history(history_messages)
 
     # Получаю ответ от ChatGPT
@@ -30,10 +29,10 @@ async def chat_dialog_handler(message: types.Message):
 
     # Создаю сообщение ассистента и добавляю в историю сообщений
     history_messages.append(Message(role=RoleType.ASSISTANT.value, content=answer))
-
     # Сохраняю историю сообщений в БД
     await user_storage.update_history_messages(user_id, message_history=history_messages)
 
+    # Вывожу сообщение
     if output_type == 'voice':
         file_voice = await get_voice_answer(answer, user_id)
         logger.info('Перевожу текст в аудио')
