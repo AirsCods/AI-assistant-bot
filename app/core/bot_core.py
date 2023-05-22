@@ -110,7 +110,7 @@ class BotCore(BotCoreStartCommandsMixin):
         return answer, output_type
 
     @staticmethod
-    async def get_voice_answer(self, answer: str, user_id: int) -> FSInputFile:
+    async def get_voice_answer(answer: str, user_id: int) -> FSInputFile:
         path_file = f"{os.getcwd()}/tmp/tts_{user_id}"
         tts = gTTS(text=answer, lang="ru", slow=False)
         tts.save(path_file)
