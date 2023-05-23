@@ -1,3 +1,4 @@
+import asyncio
 import os
 from typing import Optional
 
@@ -69,27 +70,41 @@ class OpenAI:
         return answer, usage_data
 
     async def __common_get_chat_response(self, messages: list[Message], stream=False):
-        try:
-            response = await openai.ChatCompletion.acreate(
-                messages=messages,
-                model=self.model,
-                temperature=self.config['temperature'],
-                n=self.config['n_choices'],
-                # max_tokens=self.config['max_tokens'],
-                presence_penalty=self.config['presence_penalty'],
-                frequency_penalty=self.config['frequency_penalty'],
-                stream=stream
-            )
-            return response
+        """Get response from OpenAI API"""
+        NUM_RETRIES = 5
+        RETRY_INTERVAL = 2
 
-        except openai.error.RateLimitError as e:
-            raise Exception(f'⚠️ _OpenAI Rate Limit exceeded_ ⚠️\n{str(e)}') from e
+        for attempt in range(NUM_RETRIES):  # 5 попыток
+            try:
+                response = await openai.ChatCompletion.acreate(
+                    messages=messages,
+                    model=self.model,
+                    temperature=self.config['temperature'],
+                    n=self.config['n_choices'],
+                    # max_tokens=self.config['max_tokens'],
+                    presence_penalty=self.config['presence_penalty'],
+                    frequency_penalty=self.config['frequency_penalty'],
+                    stream=stream
+                )
+                return response
 
-        except openai.error.InvalidRequestError as e:
-            raise Exception(f'⚠️ _OpenAI Invalid request_ ⚠️\n{str(e)}') from e
+            except openai.error.RateLimitError as e:
+                if attempt < NUM_RETRIES - 1:  # no need to sleep on last attempt
+                    await asyncio.sleep(RETRY_INTERVAL)
+                else:
+                    raise Exception(f'⚠️ _OpenAI Rate Limit exceeded_ ⚠️\n{str(e)}') from e
 
-        except Exception as e:
-            raise Exception(f'⚠️ _An error has occurred_ ⚠️\n{str(e)}') from e
+            except openai.error.InvalidRequestError as e:
+                if attempt < NUM_RETRIES - 1:  # no need to sleep on last attempt
+                    await asyncio.sleep(RETRY_INTERVAL)
+                else:
+                    raise Exception(f'⚠️ _OpenAI Invalid request_ ⚠️\n{str(e)}') from e
+
+            except Exception as e:
+                if attempt < NUM_RETRIES - 1:  # no need to sleep on last attempt
+                    await asyncio.sleep(RETRY_INTERVAL)
+                else:
+                    raise Exception(f'⚠️ _An error has occurred_ ⚠️\n{str(e)}') from e
 
     @staticmethod
     async def __print_finish_reason(finish_reason):
