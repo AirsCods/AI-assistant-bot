@@ -1,6 +1,5 @@
 import asyncio
 import os
-from typing import Optional
 
 import openai
 from loguru import logger
