@@ -1,3 +1,3 @@
-from .types import RoleType, User, Message, Prompt
+from .types import Message, Prompt, RoleType, User
 
 __all__ = ['Message', 'User', 'Prompt', 'RoleType']

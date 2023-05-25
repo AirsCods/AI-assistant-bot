@@ -1,12 +1,12 @@
 from cachetools import TTLCache
-
-from app.llm.llm_models import LlmAgent
 from config import DB_URL_CONNECT, OPENAI_CONFIG
 from core import BotCore
 from storage import PromptApi
 from storage.history_api import HistoryApi
 from storage.interface import StorageInterface
-from storage.storage import MongoDBUser, MongoDBPrompt
+from storage.storage import MongoDBPrompt, MongoDBUser
+
+from app.llm.llm_models import LlmAgent
 
 # инициализация хранилища пользователей
 db_storage: StorageInterface = MongoDBUser(DB_URL_CONNECT)

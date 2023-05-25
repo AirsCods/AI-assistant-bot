@@ -3,7 +3,6 @@ from typing import Optional
 import tiktoken
 from cachetools import TTLCache
 from loguru import logger
-
 from models import Message, User
 from storage.interface import StorageInterface
 
@@ -40,7 +39,7 @@ class HistoryApi:
         if user_id in self.cache:
             return self.cache[user_id]
 
-        logger.info(f'Получаю данные пользователя из базы данных')
+        logger.info('Получаю данные пользователя из базы данных')
         try:
             user_data: User = await self.storage.read(user_id)
         except Exception as e:

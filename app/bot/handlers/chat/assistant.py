@@ -1,20 +1,20 @@
 import os
 
-from aiogram import types, F
+from aiogram import F, types
 from aiogram.enums import ContentType
-from loguru import logger
-from pydub import AudioSegment
-
-from bot.loader import dp, bot
+from bot.loader import bot, dp
 from bot.states import BotState
 from config import MAX_MESSAGE_LENGTH
 from loader import bot_core
+from loguru import logger
+from pydub import AudioSegment
 
 
 # Обработка сообщений к GPT
 @dp.message(BotState.CHAT, F.text | F.voice | F.audio)
 async def chat_dialog_handler(message: types.Message):
     """Обработчик на получение голосового и аудио сообщения."""
+    await bot.send_chat_action(chat_id=message.chat.id, action='typing', request_timeout=5)
 
     question = ''
     if message.content_type == ContentType.VOICE:
@@ -36,6 +36,7 @@ async def chat_dialog_handler(message: types.Message):
         os.remove(file_voice.path)
 
     elif output_type == 'text':
+        await bot.send_chat_action(chat_id=message.chat.id, action='typing', request_timeout=5)
         text_parts = [answer[i:i + MAX_MESSAGE_LENGTH]
                       for i in range(0, len(answer), MAX_MESSAGE_LENGTH)]
         for part in text_parts:

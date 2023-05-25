@@ -1,10 +1,8 @@
 import asyncio
 
-from aiogram import Bot, Dispatcher
-from aiogram import types
-from loguru import logger
-
+from aiogram import Bot, Dispatcher, types
 from config import admins
+from loguru import logger
 
 
 class TelegramInterface:

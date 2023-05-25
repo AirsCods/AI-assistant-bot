@@ -1,7 +1,7 @@
 import tiktoken
 from loguru import logger
-
 from models.types import Message
+
 from .openai_llm import OpenAI
 
 

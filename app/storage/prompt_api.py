@@ -1,5 +1,4 @@
 from cachetools import TTLCache
-
 from models import Prompt
 from storage.storage import MongoDBPrompt
 

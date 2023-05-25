@@ -2,9 +2,8 @@ import pickle
 from typing import Any
 
 from loguru import logger
+from models import Prompt, User
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
-
-from models import User, Prompt
 from storage.interface import StorageInterface
 
 

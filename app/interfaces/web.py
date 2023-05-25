@@ -1,8 +1,9 @@
 import streamlit as st
+from frontend.elements import (CSS_STYLES, Debugger, Developer, Role,
+                               UserInterface)
 from loguru import logger
 
 from app.core import BotCore
-from frontend.elements import UserInterface, Role, Developer, Debugger, CSS_STYLES
 
 
 class WebInterface:

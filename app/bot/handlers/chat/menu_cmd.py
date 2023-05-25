@@ -1,13 +1,21 @@
 from aiogram import types
-from aiogram.filters import StateFilter, Text
+from aiogram.filters import Command, StateFilter, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-
-from bot.keyboards import get_role_keyboard, get_type_keyboard, get_change_keyboard
+from bot.keyboards import (get_change_keyboard, get_chat_menu,
+                           get_role_keyboard, get_type_keyboard)
+from bot.loader import dp
 from bot.states import BotState
 from config import MAX_MESSAGE_LENGTH
 from loader import bot_core
-from bot.loader import dp
+
+
+# Команда открытия меню
+@dp.message(Command('menu'), BotState.CHAT)
+async def cmd_go_chat(message: types.Message):
+    await message.delete()
+    chat_menu = get_chat_menu()
+    await message.answer('Cписок команд:', reply_markup=chat_menu)
 
 
 # Установить роль ассистента

@@ -2,12 +2,12 @@ import datetime
 import os
 
 from aiogram.types import FSInputFile
-from gtts import gTTS
-
 from bot.states import BotState
+from gtts import gTTS
 from llm.llm_models import LlmAgent
-from models import Message, User, Prompt, RoleType
+from models import Message, Prompt, RoleType, User
 from storage import HistoryApi, PromptApi
+
 from .bot_core_cmd_mixins import BotCoreStartCommandsMixin
 
 

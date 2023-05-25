@@ -1,5 +1,5 @@
-from bot.loader import bot
 from bot.handlers import dp
+from bot.loader import bot
 from interfaces.telegram import TelegramInterface
 
 if __name__ == "__main__":

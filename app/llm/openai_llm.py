@@ -3,7 +3,6 @@ import os
 
 import openai
 from loguru import logger
-
 from models.types import Message, RoleType
 
 
@@ -68,7 +67,7 @@ class OpenAI:
 
         return answer, usage_data
 
-    async def __common_get_chat_response(self, messages: list[Message], stream=False):
+    async def __common_get_chat_response(self, messages: list[Message]):
         """Get response from OpenAI API"""
         NUM_RETRIES = 5
         RETRY_INTERVAL = 2
@@ -81,9 +80,6 @@ class OpenAI:
                     temperature=self.config['temperature'],
                     n=self.config['n_choices'],
                     # max_tokens=self.config['max_tokens'],
-                    presence_penalty=self.config['presence_penalty'],
-                    frequency_penalty=self.config['frequency_penalty'],
-                    stream=stream
                 )
                 return response
 
