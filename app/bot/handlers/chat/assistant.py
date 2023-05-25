@@ -3,11 +3,12 @@ import os
 from aiogram import types, F
 from aiogram.enums import ContentType
 from loguru import logger
+from pydub import AudioSegment
 
+from bot.loader import dp, bot
 from bot.states import BotState
 from config import MAX_MESSAGE_LENGTH
 from loader import bot_core
-from bot.loader import dp
 
 
 # Обработка сообщений к GPT
@@ -17,10 +18,10 @@ async def chat_dialog_handler(message: types.Message):
 
     question = ''
     if message.content_type == ContentType.VOICE:
-        path_file = await tg_bot.download_audio_file(message.voice)
+        path_file = await download_audio_file(message.voice)
         question = await bot_core.llm.get_speech_to_text(path_file)
     elif message.content_type == ContentType.AUDIO:
-        path_file = await tg_bot.download_audio_file(message.audio)
+        path_file = await download_audio_file(message.audio)
         question = await bot_core.llm.get_speech_to_text(path_file)
     elif message.content_type == ContentType.TEXT:
         question = message.text
@@ -39,3 +40,15 @@ async def chat_dialog_handler(message: types.Message):
                       for i in range(0, len(answer), MAX_MESSAGE_LENGTH)]
         for part in text_parts:
             await message.answer(part)
+
+
+async def download_audio_file(audio: types.Audio | types.Voice) -> str:
+    file_io = await bot.download(audio)
+    # Преобразование BytesIO объекта в AudioSegment объект
+    audio_segment = AudioSegment.from_file(file_io)
+    # Экспорт аудио файла в формат MP3
+    logger.info('Сохраняю данные аудио в файл')
+    path_file = f"{os.getcwd()}/tmp/{audio.file_id}.mp3"
+    audio_segment.export(path_file, format='mp3')
+    file_io.close()
+    return path_file
