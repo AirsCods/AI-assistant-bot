@@ -1,3 +1,3 @@
-from .chat import router
+from .chat import dp
 
-__all__ = ['router']
+__all__ = ['dp']

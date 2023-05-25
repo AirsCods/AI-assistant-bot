@@ -7,11 +7,11 @@ from bot.keyboards import get_role_keyboard, get_type_keyboard, get_change_keybo
 from bot.states import BotState
 from config import MAX_MESSAGE_LENGTH
 from loader import bot_core
-from .start import router
+from bot.loader import dp
 
 
 # Установить роль ассистента
-@router.callback_query(StateFilter(BotState.CHAT), Text('set_role'))
+@dp.callback_query(StateFilter(BotState.CHAT), Text('set_role'))
 async def cmd_set_role(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.ROLE)
     await callback.message.delete()
@@ -23,7 +23,7 @@ async def cmd_set_role(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer('Выберите роль для ассистента:', reply_markup=role_keyboard)
 
 
-@router.callback_query(StateFilter(BotState.ROLE))
+@dp.callback_query(StateFilter(BotState.ROLE))
 async def callback_set_role(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     role_name = callback.data
@@ -35,7 +35,7 @@ async def callback_set_role(callback: CallbackQuery, state: FSMContext):
 
 
 # Установить тип ответа
-@router.callback_query(StateFilter(BotState.CHAT), Text('set_output'))
+@dp.callback_query(StateFilter(BotState.CHAT), Text('set_output'))
 async def cmd_set_output(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.TYPE)
     await callback.message.delete()
@@ -45,7 +45,7 @@ async def cmd_set_output(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer('Выберите формат ответов ассистента:', reply_markup=type_keyboard)
 
 
-@router.callback_query(StateFilter(BotState.TYPE))
+@dp.callback_query(StateFilter(BotState.TYPE))
 async def callback_set_type(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.CHAT)
     await callback.message.delete()
@@ -57,7 +57,7 @@ async def callback_set_type(callback: CallbackQuery, state: FSMContext):
 
 
 # Получить информацию о пользователе
-@router.callback_query(Text('get_user_info'), StateFilter(BotState.CHAT))
+@dp.callback_query(Text('get_user_info'), StateFilter(BotState.CHAT))
 async def cmd_get_info(callback: CallbackQuery):
     await callback.message.delete()
     user_id = callback.from_user.id
@@ -67,7 +67,7 @@ async def cmd_get_info(callback: CallbackQuery):
 
 
 # Очистить историю сообщений
-@router.callback_query(Text('clear_history'), StateFilter(BotState.CHAT))
+@dp.callback_query(Text('clear_history'), StateFilter(BotState.CHAT))
 async def cdm_clear_history(callback: CallbackQuery):
     await callback.message.delete()
     user_id = callback.from_user.id
@@ -76,7 +76,7 @@ async def cdm_clear_history(callback: CallbackQuery):
 
 
 # Получить историю сообщений
-@router.callback_query(Text('get_history'), StateFilter(BotState.CHAT))
+@dp.callback_query(Text('get_history'), StateFilter(BotState.CHAT))
 async def cdm_get_history(callback: CallbackQuery):
     await callback.message.delete()
     user_id = callback.from_user.id
@@ -91,7 +91,7 @@ async def cdm_get_history(callback: CallbackQuery):
 
 
 # Обновление текста промпта
-@router.callback_query(StateFilter(BotState.CHAT), Text('update_role'))
+@dp.callback_query(StateFilter(BotState.CHAT), Text('update_role'))
 async def update_prompt_text(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.UPDATE_PROMPT)
     await callback.message.delete()
@@ -103,7 +103,7 @@ async def update_prompt_text(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer('Выберите роль для изменения', reply_markup=role_keyboard)
 
 
-@router.callback_query(StateFilter(BotState.UPDATE_PROMPT))
+@dp.callback_query(StateFilter(BotState.UPDATE_PROMPT))
 async def callback_set_role(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.CHOOSE_UPDATE)
     await callback.message.delete()
@@ -116,14 +116,14 @@ async def callback_set_role(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer('Что изменить у роли:', reply_markup=change_keyboard)
 
 
-@router.callback_query(StateFilter(BotState.CHOOSE_UPDATE), Text('prompt'))
+@dp.callback_query(StateFilter(BotState.CHOOSE_UPDATE), Text('prompt'))
 async def callback_set_text(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.CHANGE_TEXT)
     await callback.message.delete()
     await callback.message.answer('Введите новый промпт роли:')
 
 
-@router.message(BotState.CHANGE_TEXT)
+@dp.message(BotState.CHANGE_TEXT)
 async def change_prompt(message: types.Message, state: FSMContext):
     await state.set_state(BotState.CHAT)
     await message.delete()
@@ -136,14 +136,14 @@ async def change_prompt(message: types.Message, state: FSMContext):
     await message.answer('Промпт роли изменен!')
 
 
-@router.callback_query(StateFilter(BotState.CHOOSE_UPDATE), Text('description'))
+@dp.callback_query(StateFilter(BotState.CHOOSE_UPDATE), Text('description'))
 async def callback_set_text(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.CHANGE_DESC)
     await callback.message.delete()
     await callback.message.answer('Введите новое описание роли:')
 
 
-@router.message(BotState.CHANGE_TEXT)
+@dp.message(BotState.CHANGE_TEXT)
 async def change_prompt(message: types.Message, state: FSMContext):
     await state.set_state(BotState.CHAT)
     await message.delete()
@@ -157,14 +157,14 @@ async def change_prompt(message: types.Message, state: FSMContext):
 
 
 # Добавление роли
-@router.callback_query(StateFilter(BotState.CHAT), Text('add_role'))
+@dp.callback_query(StateFilter(BotState.CHAT), Text('add_role'))
 async def cmd_add_role(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
     await state.set_state(BotState.ADD_NAME)
     await callback.message.answer('Введите название роли:')
 
 
-@router.message(StateFilter(BotState.ADD_NAME))
+@dp.message(StateFilter(BotState.ADD_NAME))
 async def add_name(message: types.Message, state: FSMContext):
     await state.set_state(BotState.ADD_DESC)
     await state.update_data(name=message.text)
@@ -172,7 +172,7 @@ async def add_name(message: types.Message, state: FSMContext):
     await message.answer('Введите описание роли:')
 
 
-@router.message(StateFilter(BotState.ADD_DESC))
+@dp.message(StateFilter(BotState.ADD_DESC))
 async def add_description(message: types.Message, state: FSMContext):
     await state.set_state(BotState.ADD_PROMPT)
     await state.update_data(description=message.text)
@@ -180,7 +180,7 @@ async def add_description(message: types.Message, state: FSMContext):
     await message.answer('Введите промпт роли:')
 
 
-@router.message(BotState.ADD_PROMPT)
+@dp.message(BotState.ADD_PROMPT)
 async def add_prompt(message: types.Message, state: FSMContext):
     await state.set_state(BotState.CHAT)
     await state.update_data(prompt=message.text)

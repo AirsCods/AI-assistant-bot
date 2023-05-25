@@ -1,5 +1,5 @@
-from .start import router
-from .assistant import router
-from .menu_cmd import router
+from .assistant import dp
+from .menu_cmd import dp
+from .start import dp
 
-__all__ = ['router']
+__all__ = ['dp']

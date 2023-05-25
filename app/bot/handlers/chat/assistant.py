@@ -7,11 +7,11 @@ from loguru import logger
 from bot.states import BotState
 from config import MAX_MESSAGE_LENGTH
 from loader import bot_core
-from .start import router
+from bot.loader import dp
 
 
 # Обработка сообщений к GPT
-@router.message(BotState.CHAT, F.text | F.voice | F.audio)
+@dp.message(BotState.CHAT, F.text | F.voice | F.audio)
 async def chat_dialog_handler(message: types.Message):
     """Обработчик на получение голосового и аудио сообщения."""
 

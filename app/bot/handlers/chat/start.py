@@ -1,18 +1,17 @@
-from aiogram import Router, types
+from aiogram import types
 from aiogram.filters import CommandStart, StateFilter, Command, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from bot.keyboards import get_role_keyboard, get_chat_menu
+from bot.loader import dp
 from bot.states import BotState
 from loader import bot_core
 from models import User
 
-router = Router()
-
 
 # Команда старт. Запуск бота.
-@router.message(CommandStart())
+@dp.message(CommandStart())
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.set_state(BotState.ADD_USER)
     await message.delete()
@@ -27,7 +26,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
 
 # Добавление пользователя или обновление.
-@router.callback_query(StateFilter(BotState.ADD_USER))
+@dp.callback_query(StateFilter(BotState.ADD_USER))
 async def add_user(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BotState.CHAT)
     await callback.message.delete()
@@ -42,7 +41,7 @@ async def add_user(callback: CallbackQuery, state: FSMContext):
 
 
 # Команда открытия меню
-@router.message(Command('menu'), BotState.CHAT)
+@dp.message(Command('menu'), BotState.CHAT)
 async def cmd_go_chat(message: types.Message):
     await message.delete()
     chat_menu = get_chat_menu()
@@ -50,7 +49,7 @@ async def cmd_go_chat(message: types.Message):
 
 
 # Команда открытия меню
-@router.message(Command('go'))
+@dp.message(Command('go'))
 async def cmd_go_all(message: types.Message, state: FSMContext):
     await message.delete()
     user_id = message.from_user.id
@@ -67,8 +66,8 @@ async def cmd_go_all(message: types.Message, state: FSMContext):
                              f' Для регистрации нажмите команду /start.')
 
 
-@router.callback_query(Text('help'), StateFilter(BotState.CHAT))
-@router.callback_query(Command('help'), StateFilter(BotState.CHAT))
+@dp.callback_query(Text('help'), StateFilter(BotState.CHAT))
+@dp.callback_query(Command('help'), StateFilter(BotState.CHAT))
 async def cmd_help(callback: CallbackQuery):
     await callback.message.delete()
     await callback.answer()
