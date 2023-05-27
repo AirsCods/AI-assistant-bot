@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 from loguru import logger
 
 load_dotenv()
+DEBUG = os.getenv('DEBUG', '').lower() == 'true'
+
 ADMIN_ID = os.getenv('ADMIN_ID')
 
 admins = [
     ADMIN_ID,
 ]
-
-DEBUG = os.getenv('DEBUG')
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 SHOW_USAGE = os.getenv('SHOW_USAGE')
@@ -30,28 +30,32 @@ OPENAI_CONFIG = {
 }
 
 # MONGODB CONFIG
-DB_USERNAME = os.getenv('DB_USERNAME')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_NAME = os.getenv('DB_NAME')
-DB_URL_CONNECT = f'mongodb+srv://AirsCods:{DB_PASSWORD}@cluster0.ixbwg99.mongodb.net/?retryWrites=true&w=majority'
+# Configuration MongoDB
+DB_URL_CONNECT = 'mongodb://mongodb:27017'
 
-# Configuration loguru input
+# Configuration Loguru input
 logger.remove()
+logger.add(
+    'logs/log_{time:DD-MMM-YYYY}.log',
+    format='{time:DD-MMM-YYYY HH:mm:ss} | {level} | {file} > {function} : {message}',
+    backtrace=True,
+    diagnose=False,
+    level='INFO',
+    rotation='00:00',
+    retention='7 days',
+    enqueue=True,
+)
 
 if DEBUG:
+    # MONGO_URI = f"mongodb+srv://{os.getenv('DB_USERNAME')}:{os.getenv('DB_PASSWORD')}" \
+    #             f"@cluster0.ixbwg99.mongodb.net/?retryWrites=true&w=majority"
+    SHOW_USAGE = True
     logger.add(
-        sys.stdout,
-        format='<yellow>{time:DD-MMM-YYYY HH:mm:ss}</yellow> | <green>{level}</green> | '
-               '{file} | <red>{function}</red> | <cyan>{message}</cyan>',
+        sys.stderr,
+        format='<yellow>{time:DD-MMM-YY HH:mm:ss}</yellow> | <green>{level}</green> | '
+               '<magenta>{file}</magenta> > <lc>{function}</lc> : <white>{message}</white>',
         colorize=True,
-        level='INFO',
+        diagnose=True,
+        level='DEBUG'
     )
-else:
-    logger.add(
-        'logs/log_{time:DD-MMM-YYYY}.log',
-        rotation='00:00',
-        retention='7 days',
-        format='{time:DD-MMM-YYYY HH:mm:ss} | {level} | {message}',
-        colorize=True,
-        level='INFO',
-    )
+    logger.info('DEBUG is TRUE')

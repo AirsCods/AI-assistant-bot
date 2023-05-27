@@ -1,0 +1,21 @@
+version: "3.10"
+
+services:
+  bot:
+    build: .
+    container_name: air-bot
+    environment:
+      - DEBUG=True
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    container_name: air-mongodb
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27016:27017"
+
+volumes:
+  mongodb_data:
