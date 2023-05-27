@@ -2,6 +2,7 @@ from aiogram import types
 from aiogram.filters import Command, CommandStart, StateFilter, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
+
 from bot.handlers.chat.assistant import chat_dialog_handler
 from bot.keyboards import get_role_keyboard
 from bot.loader import dp
@@ -20,6 +21,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
              f'Выберите роль для ассистента:\n'
 
     prompts = await bot_core.get_all_prompt()
+    if prompts is None:
+        prompts = bot_core.create_prompt(name='DEFAULT', description='', prompt='', author='bot')
 
     role_keyboard = get_role_keyboard(prompts)
     await message.answer(answer, reply_markup=role_keyboard)

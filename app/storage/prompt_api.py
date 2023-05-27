@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cachetools import TTLCache
 from models import Prompt
 from storage.storage import MongoDBPrompt
@@ -30,7 +32,7 @@ class PromptApi:
             self.cache[name] = prompt
             return prompt
 
-    async def get_all_prompt(self) -> list[Prompt]:
+    async def get_all_prompt(self) -> Optional[list[Prompt]]:
         len_db = await self.storage.storage.count_documents({})
         if len(self.cache) == len_db:
             all_prompt = self.cache.values()
