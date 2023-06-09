@@ -6,6 +6,8 @@ services:
     container_name: air-bot
     environment:
       - DEBUG=True
+    volumes:
+      - bot_logs:/app/logs
     depends_on:
       - mongodb
 
@@ -14,8 +16,11 @@ services:
     container_name: air-mongodb
     volumes:
       - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
     ports:
       - "27016:27017"
 
 volumes:
+  bot_logs:
   mongodb_data:
+  mongodb_config:

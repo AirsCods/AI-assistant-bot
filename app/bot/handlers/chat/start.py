@@ -2,10 +2,11 @@ from aiogram import types
 from aiogram.filters import Command, CommandStart, StateFilter, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
+from loguru import logger
 
 from bot.handlers.chat.assistant import chat_dialog_handler
 from bot.keyboards import get_role_keyboard
-from bot.loader import dp
+from bot.loader import dp, bot
 from bot.states import BotState
 from loader import bot_core
 from models import User
@@ -42,6 +43,10 @@ async def add_user(callback: CallbackQuery, state: FSMContext):
     await callback.answer(text=f'Ассистент в роли {role_name} готов к диалогу!🎱', show_alert=True)
     await callback.message.answer(f'Ассистент в роли {role_name} готов к диалогу!🎱')
 
+    commands_list = [types.BotCommand(command='menu', description='Меню бота.')]
+    await bot.set_my_commands(commands_list)
+    logger.info('Menu commands assigned.')
+
 
 @dp.callback_query(Text('help'), StateFilter(BotState.CHAT))
 @dp.callback_query(Command('help'), StateFilter(BotState.CHAT))
@@ -57,16 +62,23 @@ async def cmd_help(callback: CallbackQuery):
 
 @dp.message(StateFilter(None))
 async def cmd_go_all(message: types.Message, state: FSMContext):
-    await message.delete()
     user_id = message.from_user.id
     user_data: User = await bot_core.user_storage.get_user_data(user_id)
 
     if user_data:
         role_name = user_data['bot_role']
         await state.set_state(BotState.CHAT)
-        await message.answer(f'C возращением {message.from_user.username}. Вы общаетесь с {role_name}.')
+
+        await message.answer(f'C возращением {message.from_user.username}.\n'
+                             f'Вы общаетесь с {role_name}.')
+
         await chat_dialog_handler(message)
 
+        commands_list = [types.BotCommand(command='menu', description='Меню бота.')]
+        await bot.set_my_commands(commands_list)
+        logger.info('Menu commands assigned.')
+
     else:
+        await message.delete()
         await message.answer(f'Мы с вами не знакомы {message.from_user.first_name}\n'
                              f' Для регистрации нажмите команду /start.')

@@ -18,6 +18,7 @@ class TelegramInterface:
         try:
             logger.info('------------Telegram bot start polling.------------')
             await self.bot.delete_webhook()
+            await self.bot.delete_my_commands()
             await self._on_startup_notify()
             await self._set_default_commands()
 
@@ -38,7 +39,6 @@ class TelegramInterface:
 
     async def _set_default_commands(self):
         cmd_start = [
-            ('go', 'Запустить бота.'),
             ('menu', 'Меню бота.'),
         ]
         commands_list = [types.BotCommand(command=cmd, description=desc)

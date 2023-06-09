@@ -29,7 +29,6 @@ OPENAI_CONFIG = {
     'frequency_penalty': 0,
 }
 
-# MONGODB CONFIG
 # Configuration MongoDB
 DB_URL_CONNECT = 'mongodb://mongodb:27017'
 
@@ -47,8 +46,7 @@ logger.add(
 )
 
 if DEBUG:
-    # MONGO_URI = f"mongodb+srv://{os.getenv('DB_USERNAME')}:{os.getenv('DB_PASSWORD')}" \
-    #             f"@cluster0.ixbwg99.mongodb.net/?retryWrites=true&w=majority"
+    # DB_URL_CONNECT = 'mongodb://localhost:27016/'
     SHOW_USAGE = True
     logger.add(
         sys.stderr,
