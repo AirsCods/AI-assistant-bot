@@ -14,7 +14,6 @@ admins = [
 ]
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-SHOW_USAGE = os.getenv('SHOW_USAGE')
 MAX_MESSAGE_LENGTH = 4096
 
 OPEN_AI_TOKEN = os.getenv('OPEN_AI_TOKEN')
@@ -31,6 +30,9 @@ OPENAI_CONFIG = {
 
 # Configuration MongoDB
 DB_URL_CONNECT = 'mongodb://mongodb:27017'
+if DEBUG:
+    logger.info('DEBUG is TRUE')
+    DB_URL_CONNECT = 'mongodb://localhost:27016/'
 
 # Configuration Loguru input
 logger.remove()
@@ -44,16 +46,11 @@ logger.add(
     retention='7 days',
     enqueue=True,
 )
-
-if DEBUG:
-    DB_URL_CONNECT = 'mongodb://localhost:27016/'
-    SHOW_USAGE = True
-    logger.add(
-        sys.stderr,
-        format='<yellow>{time:DD-MMM-YY HH:mm:ss}</yellow> | <green>{level}</green> | '
-               '<magenta>{file}</magenta> > <lc>{function}</lc> : <white>{message}</white>',
-        colorize=True,
-        diagnose=True,
-        level='DEBUG'
-    )
-    logger.info('DEBUG is TRUE')
+logger.add(
+    sys.stderr,
+    format='<yellow>{time:DD-MMM-YY HH:mm:ss}</yellow> | <green>{level}</green> | '
+           '<magenta>{file}</magenta> > <lc>{function}</lc> : <white>{message}</white>',
+    colorize=True,
+    diagnose=True,
+    level='DEBUG'
+)
