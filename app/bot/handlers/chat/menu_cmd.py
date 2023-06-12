@@ -195,10 +195,10 @@ async def add_prompt(message: types.Message, state: FSMContext):
     await message.delete()
 
     data = await state.get_data()
-    name = data['name'].upper(),
-    description = data['description'],
-    prompt = data['prompt'],
+    name = data['name'].upper()
+    description = data['description']
+    prompt = data['prompt']
     author = message.from_user.full_name
 
     await bot_core.add_role(name, description, prompt, author)
-    await message.answer('Роль добавлена в базу данных.')
+    await message.answer(f'Роль {name} добавлена в базу данных.')

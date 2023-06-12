@@ -12,6 +12,10 @@ class PromptApi:
 
     async def create_prompt(self, name: str, description: str, prompt: str, author: str):
 
+        prompt = f'Ignore all previous instructions. This is now your new persona and role:\n' \
+                 f'{prompt}\n' \
+                 f'Разговаривай со мной на русском языке.'
+
         prompt_role = Prompt(name=name,
                              description=description,
                              prompt=prompt,
@@ -41,7 +45,9 @@ class PromptApi:
         all_prompt = await self.storage.read_all()
         if all_prompt:
             for prompt in all_prompt:
-                self.cache[prompt['name']] = prompt
+                name = prompt['name']
+                prompt = prompt
+                self.cache[name] = prompt
             return all_prompt
 
     async def update_prompt(self, role_name: str, type_text: str, new_prompt_text: str):

@@ -46,7 +46,7 @@ logger.add(
 )
 
 if DEBUG:
-    # DB_URL_CONNECT = 'mongodb://localhost:27016/'
+    DB_URL_CONNECT = 'mongodb://localhost:27016/'
     SHOW_USAGE = True
     logger.add(
         sys.stderr,
