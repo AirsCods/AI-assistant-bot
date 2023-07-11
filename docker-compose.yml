@@ -1,11 +1,11 @@
-version: "3.10"
+version: "3"
 
 services:
   bot:
     build: .
-    container_name: air-bot
+    container_name: tg-bot
     environment:
-      - DEBUG=True
+      - DEBUG=False
     volumes:
       - bot_logs:/app/logs
     depends_on:
@@ -13,7 +13,7 @@ services:
 
   mongodb:
     image: mongo
-    container_name: air-mongodb
+    container_name: tg-mongodb
     volumes:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb

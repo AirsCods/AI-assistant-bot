@@ -20,6 +20,9 @@ FROM python:3.10-slim-bullseye
 # Установите рабочую директорию
 WORKDIR /app
 
+# Установите ffmpeg
+RUN apt-get update && apt-get install -y ffmpeg
+
 # Копируйте установленные зависимости из стадии сборки
 COPY --from=builder-bot /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 
