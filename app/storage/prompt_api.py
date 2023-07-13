@@ -1,6 +1,7 @@
 from typing import Optional
 
 from cachetools import TTLCache
+
 from models import Prompt
 from storage.storage import MongoDBPrompt
 
@@ -49,6 +50,8 @@ class PromptApi:
                 prompt = prompt
                 self.cache[name] = prompt
             return all_prompt
+        else:
+            return None
 
     async def update_prompt(self, role_name: str, type_text: str, new_prompt_text: str):
         if type_text == 'text':

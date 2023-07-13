@@ -17,6 +17,8 @@ services:
     volumes:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
+    ports:
+      - "1869:27017"
 
 volumes:
   bot_logs:
