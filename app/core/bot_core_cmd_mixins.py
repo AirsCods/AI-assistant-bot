@@ -10,8 +10,8 @@ class BotCorePromptMixin:
     async def get_all_prompt(self):
         return await self.prompt_storage.get_all_prompt()
 
-    async def create_prompt(self, *args):
-        await self.prompt_storage.create_prompt(*args)
+    async def create_prompt(self, **kwargs):
+        await self.prompt_storage.create_prompt(**kwargs)
 
     async def update_prompt(self, *args):
         await self.prompt_storage.update_prompt(*args)

@@ -18,14 +18,16 @@ async def cmd_start(message: types.Message, state: FSMContext):
     await state.set_state(BotState.ADD_USER)
     await message.delete()
 
+    prompts = await bot_core.get_all_prompt()
+    logger.info(f'Get all prompts: {prompts}')
+    if len(prompts) == 0:
+        await bot_core.create_prompt(name='DEFAULT', description='', prompt='', author='bot')
+        logger.info(f'Create default prompt!')
+        prompts = await bot_core.get_all_prompt()
+    role_keyboard = get_role_keyboard(prompts)
+
     answer = f'Добро пожаловать {message.from_user.full_name}! Вас приветствует бот-ассистент.\n' \
              f'Выберите роль для ассистента:\n'
-
-    prompts = await bot_core.get_all_prompt()
-    if prompts is None:
-        prompts = bot_core.create_prompt(name='DEFAULT', description='', prompt='', author='bot')
-
-    role_keyboard = get_role_keyboard(prompts)
     await message.answer(answer, reply_markup=role_keyboard)
 
 
