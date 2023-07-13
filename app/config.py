@@ -14,6 +14,8 @@ admins = [
 ]
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+SCRIPT_PATH = str(os.getenv('SCRIPT_PATH'))
+
 MAX_MESSAGE_LENGTH = 4096
 
 OPEN_AI_TOKEN = os.getenv('OPEN_AI_TOKEN')
