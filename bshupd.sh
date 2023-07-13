@@ -22,3 +22,8 @@ echo "Start docker-compose in " $PWD
 docker-compose up -d --build
 
 echo "Finish build container!"
+
+# Удаляем неиспользуемые образы Docker
+docker image prune -f
+
+echo "Delete old images!"
