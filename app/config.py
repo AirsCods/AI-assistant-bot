@@ -21,7 +21,7 @@ MAX_MESSAGE_LENGTH = 4096
 OPEN_AI_TOKEN = os.getenv('OPEN_AI_TOKEN')
 OPENAI_CONFIG = {
     'api_key': OPEN_AI_TOKEN,
-    # 'model': 'gpt-3.5-turbo',
+    # 'model': 'gpt-3.5-turbo-16k',
     'model': 'gpt-4',
     'temperature': 0.4,
     'n_choices': 1,

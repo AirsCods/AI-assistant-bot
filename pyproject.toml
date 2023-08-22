@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-aiogram = "^3.0.0b7"
+aiogram = "3.0.0b7"
 gTTS = "^2.3.2"
 loguru = "^0.7.0"
 motor = "^3.1.2"
