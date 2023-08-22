@@ -25,7 +25,7 @@ OPENAI_CONFIG = {
     'model': 'gpt-4',
     'temperature': 0.4,
     'n_choices': 1,
-    'max_tokens': 2000,
+    'max_tokens': 4000,
     'presence_penalty': 0,
     'frequency_penalty': 0,
 }
