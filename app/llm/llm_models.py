@@ -27,9 +27,9 @@ class LlmAgent:
         for message in history:
             all_len += len(encoding.encode(message['content']))
 
-        if all_len > 8100:
+        if all_len > 7000:
             logger.info('Shorting history')
-            while all_len > 8100:
+            while all_len > 7000:
                 all_len -= len(encoding.encode(history[3]['content']))
                 del history[3]
 

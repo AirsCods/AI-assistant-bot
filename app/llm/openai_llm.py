@@ -49,7 +49,7 @@ class OpenAI:
             case 'gpt-3.5-turbo':
                 return 4000
             case 'gpt-4':
-                return 8000
+                return 4000
 
     async def get_start_message_by_role(self, prompt: str) -> Message:
         return self._start_message.get_start_message(prompt)
