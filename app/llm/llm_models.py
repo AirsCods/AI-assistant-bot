@@ -21,15 +21,15 @@ class LlmAgent:
     def get_model(self) -> str:
         return self.open_ai.model
 
-    async def check_len_history(self, history: list[Message]):
+    async def check_len_history(self, history: list[Message]) -> list[Message]:
         encoding = tiktoken.encoding_for_model(self.open_ai.model)
         all_len = 0
         for message in history:
             all_len += len(encoding.encode(message['content']))
 
-        if all_len > 7000:
+        if all_len > self.open_ai.max_len:
             logger.info('Shorting history')
-            while all_len > 7000:
+            while all_len > self.open_ai.max_len - 1000:
                 all_len -= len(encoding.encode(history[3]['content']))
                 del history[3]
 

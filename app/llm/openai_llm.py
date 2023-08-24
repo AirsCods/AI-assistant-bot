@@ -8,7 +8,7 @@ from models.types import Message, RoleType
 
 class StartMessage:
     def __init__(self, model: str):
-        self.GPT_MODELS = ("gpt-3.5-turbo", "gpt-4")
+        self.GPT_MODELS = ("gpt-3.5-turbo", "gpt-4", "gpt-3.5-turbo-16k")
         self._len_start_message = None
         self._model: str = model
 
@@ -50,6 +50,8 @@ class OpenAI:
                 return 4000
             case 'gpt-4':
                 return 4000
+            case 'gpt-3.5-turbo-16k':
+                return 8000
 
     async def get_start_message_by_role(self, prompt: str) -> Message:
         return self._start_message.get_start_message(prompt)

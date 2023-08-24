@@ -70,15 +70,14 @@ async def cmd_go_all(message: types.Message, state: FSMContext):
     if user_data:
         role_name = user_data['bot_role']
         await state.set_state(BotState.CHAT)
-
-        await message.answer(f'C возращением {message.from_user.username}.\n'
-                             f'Вы общаетесь с {role_name}.')
-
-        await chat_dialog_handler(message)
-
+        await message.answer(f'{message.from_user.username}.\n'
+                             f'Вы общаетесь с {role_name}.\n'
+                             f'Повторите свой запрос.')
         commands_list = [types.BotCommand(command='menu', description='Меню бота.')]
         await bot.set_my_commands(commands_list)
         logger.info('Menu commands assigned.')
+
+        # await chat_dialog_handler(message)
 
     else:
         await message.delete()
